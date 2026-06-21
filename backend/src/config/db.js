@@ -1,11 +1,13 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise")
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "101db202",
-  database: "quanly_toanha"
-});
+const db = mysql.createPool({
+    host: "mysql-14fe164a-khanhkk173-433f.i.aivencloud.com",
+    user: "avnadmin",
+    password: "AVNS_gVBbYgSCkudpEXgB_xc",
+    database: "QLToanha"
+})
+
+module.exports = db
 
 connection.connect((err) => {
   if (err) {
