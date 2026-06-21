@@ -3,18 +3,21 @@ const mysql = require("mysql2/promise")
 const db = mysql.createPool({
     host: "mysql-14fe164a-khanhkk173-433f.i.aivencloud.com",
     user: "avnadmin",
+    port: "21512",
     password: "AVNS_gVBbYgSCkudpEXgB_xc",
-    database: "QLToanha"
+    database: "defaultdb",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
 })
 
-module.exports = db
+db.getConnection()
+    .then((connection) => {
+        console.log("Kết nối MySQL thành công");
+        connection.release();
+    })
+    .catch((err) => {
+        console.error("Lỗi kết nối MySQL:", err.message);
+    });
 
-connection.connect((err) => {
-  if (err) {
-    console.log("Lỗi kết nối MySQL:", err);
-  } else {
-    console.log("Kết nối MySQL thành công");
-  }
-});
-
-module.exports = connection;
+module.exports = db;
