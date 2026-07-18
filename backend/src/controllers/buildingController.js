@@ -1,112 +1,103 @@
 const buildingModel = require("../models/buildingModel");
 
-// GET
+// Lấy tất cả tòa nhà
 const getAllBuildings = async (req, res) => {
     try {
-
-        const buildings = await buildingModel.getAllBuildings();
-
-        res.status(200).json(buildings);
-
+        const data = await buildingModel.getAllBuildings();
+        res.status(200).json(data);
     } catch (err) {
-
         res.status(500).json({
-            message: err.message
+            message: "Lỗi lấy danh sách tòa nhà",
+            error: err.message
         });
-
     }
 };
 
-// POST
+// Thêm tòa nhà
 const createBuilding = async (req, res) => {
-
     try {
-
         const { TenToaNha, DiaChi, MoTa } = req.body;
 
         if (!TenToaNha || !DiaChi) {
-
             return res.status(400).json({
                 message: "Thiếu thông tin"
             });
-
         }
 
-        await buildingModel.createBuilding(
-            TenToaNha,
-            DiaChi,
-            MoTa
-        );
+        await buildingModel.createBuilding(TenToaNha, DiaChi, MoTa);
 
         res.status(201).json({
             message: "Thêm tòa nhà thành công"
         });
 
     } catch (err) {
-
         res.status(500).json({
-            message: err.message
+            message: "Lỗi thêm tòa nhà",
+            error: err.message
         });
-
     }
-
 };
 
-// PUT
+// Cập nhật tòa nhà
 const updateBuilding = async (req, res) => {
-
     try {
+        const { id } = req.params;
+        const { TenToaNha, DiaChi, MoTa } = req.body;
 
-        const id = req.params.id;
+        if (!TenToaNha || !DiaChi) {
+            return res.status(400).json({
+                message: "Thiếu thông tin"
+            });
+        }
 
-        const {
-            TenToaNha,
-            DiaChi,
-            MoTa
-        } = req.body;
-
-        await buildingModel.updateBuilding(
+        const result = await buildingModel.updateBuilding(
             id,
             TenToaNha,
             DiaChi,
             MoTa
         );
 
-        res.json({
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy tòa nhà"
+            });
+        }
+
+        res.status(200).json({
             message: "Cập nhật thành công"
         });
 
     } catch (err) {
-
         res.status(500).json({
-            message: err.message
+            message: "Lỗi cập nhật tòa nhà",
+            error: err.message
         });
-
     }
-
 };
 
-// DELETE
+// Xóa tòa nhà
 const deleteBuilding = async (req, res) => {
-
     try {
+        const { id } = req.params;
 
-        const id = req.params.id;
+        const result = await buildingModel.deleteBuilding(id);
 
-        await buildingModel.deleteBuilding(id);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy tòa nhà"
+            });
+        }
 
-        res.json({
+        res.status(200).json({
             message: "Xóa thành công"
         });
 
     } catch (err) {
-
         res.status(500).json({
-            message: err.message
+            message: "Lỗi xóa tòa nhà",
+            error: err.message
         });
-
     }
-
 };
 
 module.exports = {
