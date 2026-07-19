@@ -1,20 +1,29 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
+require("dotenv").config();
 const db = require("./config/db");
 
+// Import routes
+const authRoutes = require("./routes/authRoutes");
 const buildingRoutes = require("./routes/buildingRoutes"); // Thêm dòng này
 const apartmentRoutes = require("./routes/apartmentRoutes");
 
 const app = express();
 
+// Middleware
+app.use(cors());
 app.use(express.json());
 
+// Static folder
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
-// Đăng ký routes
+// Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/buildings", buildingRoutes);
 app.use("/api/apartments", apartmentRoutes);
 
+// Test API
 app.get("/", (req, res) => {
     res.send("Backend quản lý tòa nhà đang chạy kkk");
 });
