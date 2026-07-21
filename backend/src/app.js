@@ -1,35 +1,6 @@
-// const express = require("express");
-// const path = require("path");
-// const db = require("./config/db");
-
-// const buildingRoutes = require("./routes/buildingRoutes"); // Thêm dòng này
-// const apartmentRoutes = require("./routes/apartmentRoutes");
-
-// const authRouters=require("./routes/authRoutes");
-// const dash
-// const app = express();
-
-// app.use(express.json());
-
-// app.use("/upload", express.static(path.join(__dirname, "upload")));
-
-// // Đăng ký routes
-// app.use("/api/buildings", buildingRoutes);
-// app.use("/api/apartments", apartmentRoutes);
-
-// app.use('/api/auth', require('./routes/authRoutes'));
-
-// app.get("/", (req, res) => {
-//     res.send("Backend quản lý tòa nhà đang chạy kkk");
-// });
-// const PORT = process.env.PORT || 3000;
-// app.listen(3000, () => {
-//     console.log("Server đang chạy tại http://localhost:3000");
-// });
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
 
 const db = require("./config/db");
 
