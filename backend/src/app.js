@@ -5,6 +5,9 @@ require("dotenv").config();
 const db = require("./config/db");
 
 // Import routes
+const tenantRoutes = require("./routes/tenantRoutes");
+const contractRoutes = require("./routes/contractRoutes");
+const exportRoutes = require("./routes/exportRoutes");
 const authRoutes = require("./routes/authRoutes");
 const buildingRoutes = require("./routes/buildingRoutes"); // Thêm dòng này
 const apartmentRoutes = require("./routes/apartmentRoutes");
@@ -22,6 +25,9 @@ app.use("/upload", express.static(path.join(__dirname, "upload")));
 app.use("/api/auth", authRoutes);
 app.use("/api/buildings", buildingRoutes);
 app.use("/api/apartments", apartmentRoutes);
+app.use("/api/tenants", tenantRoutes);
+app.use("/api/contracts", contractRoutes);
+app.use("/api/export", exportRoutes);
 
 // Test API
 app.get("/", (req, res) => {
