@@ -12,6 +12,8 @@
   "dependencies": {
     "@boxicons/js": "^1.0.1",
     "@boxicons/react": "^1.0.3",
+    "axios": "^1.18.1",
+    "bootstrap": "^5.3.8",
     "dotenv": "^17.4.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
