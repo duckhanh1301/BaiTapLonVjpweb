@@ -166,6 +166,35 @@ const deleteContract = async (id) => {
     return result;
 };
 
+const getContractById = async (id) => {
+    const [rows] = await db.query(
+        `SELECT
+            hd.*,
+            nt.HoTen,
+            nt.CCCD,
+            nt.SoDienThoai,
+            nt.Email,
+            nt.NgaySinh,
+            nt.DiaChi AS DiaChiNguoiThue,
+            ch.TenCanHo,
+            ch.DienTich,
+            ch.Tang,
+            tn.TenToaNha,
+            tn.DiaChi AS DiaChiToaNha
+        FROM HopDong hd
+        JOIN NguoiThue nt
+            ON hd.MaNguoiThue = nt.MaNguoiThue
+        JOIN CanHo ch
+            ON hd.MaCanHo = ch.MaCanHo
+        JOIN ToaNha tn
+            ON ch.MaToaNha = tn.MaToaNha
+        WHERE hd.MaHopDong = ?`,
+        [id]
+    );
+
+    return rows[0] || null;
+};
+
 module.exports = {
     getAllContracts,
     getExpiringContracts,
@@ -175,5 +204,6 @@ module.exports = {
     hasOverlappingContract,
     createContract,
     updateContract,
-    deleteContract
+    deleteContract,
+    getContractById
 };
