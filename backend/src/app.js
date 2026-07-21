@@ -37,6 +37,7 @@ const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const buildingRoutes = require("./routes/buildingRoutes");
 const apartmentRoutes = require("./routes/apartmentRoutes");
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use("/upload", express.static(path.join(__dirname, "upload")));
 app.use("/api/auth", authRoutes);
 app.use("/api/buildings", buildingRoutes);
 app.use("/api/apartments", apartmentRoutes);
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // Test API
 app.get("/", (req, res) => {
