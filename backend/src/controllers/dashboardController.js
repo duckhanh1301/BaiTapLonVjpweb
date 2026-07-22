@@ -7,17 +7,26 @@ exports.getSummary = async (req, res) => {
         const [buildings] = await db.query('SELECT COUNT(*) as total FROM ToaNha');
         // Tổng số căn hộ
         const [apartments] = await db.query('SELECT COUNT(*) as total FROM CanHo');
-        // Số căn hộ đang thuê
-        const [rented] = await db.query('SELECT COUNT(*) as total FROM CanHo WHERE TrangThai = "DangThue"');
-        // Số căn hộ trống
-        const [empty] = await db.query('SELECT COUNT(*) as total FROM CanHo WHERE TrangThai = "Trong"');
-        // Doanh thu tháng hiện tại (tính từ HopDong)
+
+        // Số căn hộ đang thuê: đếm số MaCanHo có hợp đồng đang hiệu lực
+        const [rented] = await db.query(`
+            SELECT COUNT(DISTINCT hd.MaCanHo) as total
+            FROM HopDong hd
+            WHERE hd.TrangThai = 'HieuLuc' 
+              AND CURDATE() BETWEEN hd.NgayBatDau AND hd.NgayKetThuc
+        `);
+        const rentedCount = rented[0]?.total || 0;
+        const totalApartments = apartments[0]?.total || 0;
+        const emptyCount = totalApartments - rentedCount;
+
+        // Doanh thu tháng hiện tại
         const [revenueMonth] = await db.query(`
             SELECT SUM(GiaThue) as total
             FROM HopDong
             WHERE TrangThai = 'HieuLuc'
               AND CURDATE() BETWEEN NgayBatDau AND NgayKetThuc
         `);
+
         // Số hợp đồng sắp hết hạn (30 ngày tới)
         const [expiring] = await db.query(`
             SELECT COUNT(*) as total
@@ -28,9 +37,9 @@ exports.getSummary = async (req, res) => {
 
         res.json({
             totalBuildings: buildings[0]?.total || 0,
-            totalApartments: apartments[0]?.total || 0,
-            rentedApartments: rented[0]?.total || 0,
-            emptyApartments: empty[0]?.total || 0,
+            totalApartments: totalApartments,
+            rentedApartments: rentedCount,
+            emptyApartments: emptyCount,
             revenueThisMonth: revenueMonth[0]?.total || 0,
             expiringContracts: expiring[0]?.total || 0
         });
@@ -39,6 +48,7 @@ exports.getSummary = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 // API doanh thu theo tháng (12 tháng gần nhất)
 exports.getRevenueByMonth = async (req, res) => {
     try {
@@ -60,11 +70,18 @@ exports.getRevenueByMonth = async (req, res) => {
 // API tỷ lệ căn hộ trống/đã thuê
 exports.getApartmentStatus = async (req, res) => {
     try {
-        const [rented] = await db.query('SELECT COUNT(*) as count FROM CanHo WHERE TrangThai = "DangThue"');
-        const [empty] = await db.query('SELECT COUNT(*) as count FROM CanHo WHERE TrangThai = "Trong"');
+        const [rented] = await db.query(`
+            SELECT COUNT(DISTINCT MaCanHo) as count
+            FROM HopDong
+            WHERE TrangThai = 'HieuLuc'
+              AND CURDATE() BETWEEN NgayBatDau AND NgayKetThuc
+        `);
+        const [total] = await db.query('SELECT COUNT(*) as count FROM CanHo');
+        const rentedCount = rented[0]?.count || 0;
+        const totalCount = total[0]?.count || 0;
         res.json({
-            rented: rented[0]?.count || 0,
-            empty: empty[0]?.count || 0
+            rented: rentedCount,
+            empty: totalCount - rentedCount
         });
     } catch (error) {
         console.error('Lỗi apartment status:', error);
