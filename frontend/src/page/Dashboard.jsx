@@ -21,18 +21,6 @@ const Dashboard = () => {
     const user = getCurrentUser();
     const isAdmin = user?.role === 'Admin';
 
-    // Nếu không phải Admin, hiển thị thông báo
-    if (!isAdmin) {
-        return (
-            <div className="container mt-5">
-                <div className="alert alert-danger">
-                    <h4>⚠️ Truy cập bị từ chối</h4>
-                    <p>Bạn không có quyền xem trang Dashboard. Chỉ Admin mới có quyền truy cập.</p>
-                </div>
-            </div>
-        );
-    }
-
     const [summary, setSummary] = useState({
         totalBuildings: 0,
         totalApartments: 0,
@@ -47,6 +35,10 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!isAdmin) {
+            return;
+        }
+
         const fetchAllData = async () => {
             try {
                 const [summaryData, monthData, statusData, buildingData] = await Promise.all([
@@ -66,7 +58,19 @@ const Dashboard = () => {
             }
         };
         fetchAllData();
-    }, []);
+    }, [isAdmin]);
+
+    // Nếu không phải Admin, hiển thị thông báo
+    if (!isAdmin) {
+        return (
+            <div className="container mt-5">
+                <div className="alert alert-danger">
+                    <h4>⚠️ Truy cập bị từ chối</h4>
+                    <p>Bạn không có quyền xem trang Dashboard. Chỉ Admin mới có quyền truy cập.</p>
+                </div>
+            </div>
+        );
+    }
 
     // Dữ liệu cho biểu đồ doanh thu theo tháng
     const monthLabels = revenueByMonth.map(item => item.month);
@@ -120,11 +124,8 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h2>📊 Dashboard</h2>
-            <p className="text-muted">Xin chào, {user?.email} (<strong>{user?.role}</strong>)</p>
-
             {/* 6 card thống kê */}
-            <div className="row mt-4">
+            <div className="row">
                 <div className="col-md-2 col-sm-6 mb-3">
                     <div className="card text-white bg-primary">
                         <div className="card-body">
