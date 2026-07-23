@@ -1,59 +1,36 @@
 import '../styles/Header.css'
-import { Dashboard, Apartment, Cog, Pin, ChartTrend, UserCircle } from '@boxicons/react';
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { navigationItems } from './navigation'
 
 
-function Header() {
+function Header({ user, handleLogout }) {
     return (
-        <div className="parent">
-            <div className="slidebar">
-                <nav>
-                    <Link to="/">
-                        <Dashboard />
-                        <span>
-                            Dashboard
-                        </span>
-                    </Link>
-                    <Link to="/">
-                        <span>
-                            <Apartment />
-                            Căn Hộ
-                        </span>
-                    </Link>
-                    <Link to="/">
-                        <span>
-                            <Cog />
-                            Dịch Vụ
-                        </span>
-                    </Link>
-                    <Link to="/">
-                        <span>
-                            <Pin />
-                            Tình Trạng
-                        </span>
-                    </Link>
-                    <Link to="/">
-                        <span>
-                            <ChartTrend />
-                            Thống Kê
-                        </span>
-                    </Link>
-                    <Link to="/">
-                        <UserCircle />
-                        <span>
-                            Cá Nhân
-                        </span>
-                    </Link>
-                </nav>
-            </div>
-            <div className="header">
-                <div className="header-content">
-                    <h1>
-                        Quản Lý Toà Nhà Cho Thuê
-                    </h1>
+        <aside className="slidebar">
+            <nav>
+                {navigationItems.map(({ path, label, icon: Icon }) => (
+                    <NavLink
+                        key={path}
+                        to={path}
+                        className={({ isActive }) => isActive ? 'active' : ''}
+                    >
+                        <Icon aria-hidden="true" />
+                        <span>{label}</span>
+                    </NavLink>
+                ))}
+            </nav>
+
+            <div className="sidebar-account pt-3 border-top">
+                <div className="text-muted small">
+                    {user?.email} <br />
+                    <span className="badge bg-info">{user?.role}</span>
                 </div>
+                <button
+                    className="btn btn-sm btn-outline-danger w-100 mt-2"
+                    onClick={handleLogout}>
+                    Đăng xuất
+                </button>
             </div>
-        </div>
+        </aside>
     )
 }
 

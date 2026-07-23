@@ -30,7 +30,6 @@ app.use("/api/contracts", contractRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/images", imageRoutes);
-
 // Test API
 app.get("/", (req, res) => {
     res.send("Backend quản lý tòa nhà đang chạy");
