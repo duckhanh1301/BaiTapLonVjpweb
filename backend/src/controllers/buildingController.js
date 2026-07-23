@@ -13,6 +13,26 @@ const getAllBuildings = async (req, res) => {
     }
 };
 
+// Lấy chi tiết tòa nhà
+const getBuildingById = async (req, res) => {
+    try {
+        const building = await buildingModel.getBuildingById(req.params.id);
+
+        if (!building) {
+            return res.status(404).json({
+                message: "Không tìm thấy tòa nhà"
+            });
+        }
+
+        res.status(200).json(building);
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
+    }
+};
+
 // Thêm tòa nhà
 const createBuilding = async (req, res) => {
     try {
@@ -24,7 +44,11 @@ const createBuilding = async (req, res) => {
             });
         }
 
-        await buildingModel.createBuilding(TenToaNha, DiaChi, MoTa);
+        await buildingModel.createBuilding(
+            TenToaNha,
+            DiaChi,
+            MoTa
+        );
 
         res.status(201).json({
             message: "Thêm tòa nhà thành công"
@@ -41,8 +65,14 @@ const createBuilding = async (req, res) => {
 // Cập nhật tòa nhà
 const updateBuilding = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { TenToaNha, DiaChi, MoTa } = req.body;
+
+        const id = req.params.id;
+
+        const {
+            TenToaNha,
+            DiaChi,
+            MoTa
+        } = req.body;
 
         if (!TenToaNha || !DiaChi) {
             return res.status(400).json({
@@ -78,9 +108,8 @@ const updateBuilding = async (req, res) => {
 // Xóa tòa nhà
 const deleteBuilding = async (req, res) => {
     try {
-        const { id } = req.params;
 
-        const result = await buildingModel.deleteBuilding(id);
+        const result = await buildingModel.deleteBuilding(req.params.id);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({
@@ -100,9 +129,28 @@ const deleteBuilding = async (req, res) => {
     }
 };
 
+// Tìm kiếm tòa nhà
+const searchBuildings = async (req, res) => {
+    try {
+
+        const keyword = req.query.keyword || "";
+
+        const data = await buildingModel.searchBuildings(keyword);
+
+        res.status(200).json(data);
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
+    }
+};
+
 module.exports = {
     getAllBuildings,
+    getBuildingById,
     createBuilding,
     updateBuilding,
-    deleteBuilding
+    deleteBuilding,
+    searchBuildings
 };

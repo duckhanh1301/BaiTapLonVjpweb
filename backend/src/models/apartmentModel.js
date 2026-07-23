@@ -11,6 +11,20 @@ const getAllApartments = async () => {
     return rows;
 };
 
+// Lấy căn hộ theo ID
+const getApartmentById = async (id) => {
+    const [rows] = await db.query(
+        `SELECT c.*, t.TenToaNha
+         FROM CanHo c
+         JOIN ToaNha t
+         ON c.MaToaNha = t.MaToaNha
+         WHERE c.MaCanHo = ?`,
+        [id]
+    );
+
+    return rows[0];
+};
+
 // Thêm căn hộ
 const createApartment = async (
     MaToaNha,
@@ -26,9 +40,9 @@ const createApartment = async (
 
     const [result] = await db.query(
         `INSERT INTO CanHo
-        (MaToaNha,TenCanHo,GiaThue,DienTich,Tang,
-        SoPhongNgu,SoPhongTam,TrangThai,MoTa)
-        VALUES(?,?,?,?,?,?,?,?,?)`,
+        (MaToaNha, TenCanHo, GiaThue, DienTich, Tang,
+        SoPhongNgu, SoPhongTam, TrangThai, MoTa)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             MaToaNha,
             TenCanHo,
@@ -45,7 +59,7 @@ const createApartment = async (
     return result;
 };
 
-// Cập nhật
+// Cập nhật căn hộ
 const updateApartment = async (
     id,
     MaToaNha,
@@ -61,17 +75,17 @@ const updateApartment = async (
 
     const [result] = await db.query(
         `UPDATE CanHo
-        SET
-        MaToaNha=?,
-        TenCanHo=?,
-        GiaThue=?,
-        DienTich=?,
-        Tang=?,
-        SoPhongNgu=?,
-        SoPhongTam=?,
-        TrangThai=?,
-        MoTa=?
-        WHERE MaCanHo=?`,
+         SET
+            MaToaNha = ?,
+            TenCanHo = ?,
+            GiaThue = ?,
+            DienTich = ?,
+            Tang = ?,
+            SoPhongNgu = ?,
+            SoPhongTam = ?,
+            TrangThai = ?,
+            MoTa = ?
+         WHERE MaCanHo = ?`,
         [
             MaToaNha,
             TenCanHo,
@@ -89,21 +103,44 @@ const updateApartment = async (
     return result;
 };
 
-// Xóa
-const deleteApartment = async(id)=>{
+// Xóa căn hộ
+const deleteApartment = async (id) => {
 
-    const [result]=await db.query(
-        "DELETE FROM CanHo WHERE MaCanHo=?",
+    const [result] = await db.query(
+        "DELETE FROM CanHo WHERE MaCanHo = ?",
         [id]
     );
 
     return result;
-
 };
 
-module.exports={
+// Tìm kiếm căn hộ
+const searchApartments = async (keyword) => {
+
+    const [rows] = await db.query(
+        `SELECT c.*, t.TenToaNha
+         FROM CanHo c
+         JOIN ToaNha t
+         ON c.MaToaNha = t.MaToaNha
+         WHERE c.TenCanHo LIKE ?
+            OR c.TrangThai LIKE ?
+            OR t.TenToaNha LIKE ?
+         ORDER BY c.MaCanHo DESC`,
+        [
+            `%${keyword}%`,
+            `%${keyword}%`,
+            `%${keyword}%`
+        ]
+    );
+
+    return rows;
+};
+
+module.exports = {
     getAllApartments,
+    getApartmentById,
     createApartment,
     updateApartment,
-    deleteApartment
-}
+    deleteApartment,
+    searchApartments
+};

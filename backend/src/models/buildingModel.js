@@ -8,10 +8,20 @@ const getAllBuildings = async () => {
     return rows;
 };
 
+// Lấy 1 tòa nhà theo ID
+const getBuildingById = async (id) => {
+    const [rows] = await db.query(
+        "SELECT * FROM ToaNha WHERE MaToaNha = ?",
+        [id]
+    );
+
+    return rows[0];
+};
+
 // Thêm tòa nhà
 const createBuilding = async (TenToaNha, DiaChi, MoTa) => {
     const [result] = await db.query(
-        `INSERT INTO ToaNha(TenToaNha, DiaChi, MoTa)
+        `INSERT INTO ToaNha (TenToaNha, DiaChi, MoTa)
          VALUES (?, ?, ?)`,
         [TenToaNha, DiaChi, MoTa]
     );
@@ -23,10 +33,11 @@ const createBuilding = async (TenToaNha, DiaChi, MoTa) => {
 const updateBuilding = async (id, TenToaNha, DiaChi, MoTa) => {
     const [result] = await db.query(
         `UPDATE ToaNha
-         SET TenToaNha=?,
-             DiaChi=?,
-             MoTa=?
-         WHERE MaToaNha=?`,
+         SET
+            TenToaNha = ?,
+            DiaChi = ?,
+            MoTa = ?
+         WHERE MaToaNha = ?`,
         [TenToaNha, DiaChi, MoTa, id]
     );
 
@@ -36,16 +47,35 @@ const updateBuilding = async (id, TenToaNha, DiaChi, MoTa) => {
 // Xóa tòa nhà
 const deleteBuilding = async (id) => {
     const [result] = await db.query(
-        "DELETE FROM ToaNha WHERE MaToaNha=?",
+        "DELETE FROM ToaNha WHERE MaToaNha = ?",
         [id]
     );
 
     return result;
 };
 
+// Tìm kiếm tòa nhà
+const searchBuildings = async (keyword) => {
+    const [rows] = await db.query(
+        `SELECT *
+         FROM ToaNha
+         WHERE TenToaNha LIKE ?
+            OR DiaChi LIKE ?
+         ORDER BY MaToaNha DESC`,
+        [
+            `%${keyword}%`,
+            `%${keyword}%`
+        ]
+    );
+
+    return rows;
+};
+
 module.exports = {
     getAllBuildings,
+    getBuildingById,
     createBuilding,
     updateBuilding,
-    deleteBuilding
+    deleteBuilding,
+    searchBuildings
 };

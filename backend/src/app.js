@@ -2,16 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const db = require("./config/db");
-
 // Import routes
-const tenantRoutes = require("./routes/tenantRoutes");
-const contractRoutes = require("./routes/contractRoutes");
-const exportRoutes = require("./routes/exportRoutes");
 const authRoutes = require("./routes/authRoutes");
 const buildingRoutes = require("./routes/buildingRoutes");
 const apartmentRoutes = require("./routes/apartmentRoutes");
-const dashboardRoutes = require('./routes/dashboardRoutes');
+const tenantRoutes = require("./routes/tenantRoutes");
+const contractRoutes = require("./routes/contractRoutes");
+const exportRoutes = require("./routes/exportRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 
 const app = express();
 
@@ -22,17 +21,22 @@ app.use(express.json());
 // Static folder
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
-// Routes
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/buildings", buildingRoutes);
 app.use("/api/apartments", apartmentRoutes);
+app.use("/api/tenants", tenantRoutes);
+app.use("/api/contracts", contractRoutes);
+app.use("/api/export", exportRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/images", imageRoutes);
 
 // Test API
 app.get("/", (req, res) => {
     res.send("Backend quản lý tòa nhà đang chạy");
 });
 
-// Port
+// Start server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
