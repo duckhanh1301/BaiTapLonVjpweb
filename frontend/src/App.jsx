@@ -7,7 +7,8 @@ import Layout from './components/Layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-   const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+
     return (
         <BrowserRouter>
             <Routes>
@@ -28,6 +29,8 @@ function App() {
                         token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
                     } 
                 />
+                {/* Route 404 - trang không tìm thấy */}
+                <Route path="*" element={<h2 className="text-center mt-5">404 - Trang không tồn tại</h2>} />
             </Routes>
         </BrowserRouter>
     );
