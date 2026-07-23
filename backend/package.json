@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "hung,khang,khanh",
   "type": "commonjs",
-  "main": "/src/app.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
