@@ -1,14 +1,10 @@
+
 const db = require('../config/db');
 
-// API tổng quan
 exports.getSummary = async (req, res) => {
     try {
-        // Tổng số tòa nhà
         const [buildings] = await db.query('SELECT COUNT(*) as total FROM ToaNha');
-        // Tổng số căn hộ
         const [apartments] = await db.query('SELECT COUNT(*) as total FROM CanHo');
-
-        // Số căn hộ đang thuê: đếm số MaCanHo có hợp đồng đang hiệu lực
         const [rented] = await db.query(`
             SELECT COUNT(DISTINCT hd.MaCanHo) as total
             FROM HopDong hd
@@ -19,7 +15,6 @@ exports.getSummary = async (req, res) => {
         const totalApartments = apartments[0]?.total || 0;
         const emptyCount = totalApartments - rentedCount;
 
-        // Doanh thu tháng hiện tại
         const [revenueMonth] = await db.query(`
             SELECT SUM(GiaThue) as total
             FROM HopDong
@@ -27,7 +22,6 @@ exports.getSummary = async (req, res) => {
               AND CURDATE() BETWEEN NgayBatDau AND NgayKetThuc
         `);
 
-        // Số hợp đồng sắp hết hạn (30 ngày tới)
         const [expiring] = await db.query(`
             SELECT COUNT(*) as total
             FROM HopDong
@@ -49,7 +43,6 @@ exports.getSummary = async (req, res) => {
     }
 };
 
-// API doanh thu theo tháng (12 tháng gần nhất)
 exports.getRevenueByMonth = async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -67,7 +60,6 @@ exports.getRevenueByMonth = async (req, res) => {
     }
 };
 
-// API tỷ lệ căn hộ trống/đã thuê
 exports.getApartmentStatus = async (req, res) => {
     try {
         const [rented] = await db.query(`
@@ -79,17 +71,13 @@ exports.getApartmentStatus = async (req, res) => {
         const [total] = await db.query('SELECT COUNT(*) as count FROM CanHo');
         const rentedCount = rented[0]?.count || 0;
         const totalCount = total[0]?.count || 0;
-        res.json({
-            rented: rentedCount,
-            empty: totalCount - rentedCount
-        });
+        res.json({ rented: rentedCount, empty: totalCount - rentedCount });
     } catch (error) {
         console.error('Lỗi apartment status:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
-// API doanh thu theo tòa nhà
 exports.getRevenueByBuilding = async (req, res) => {
     try {
         const [rows] = await db.query(`
