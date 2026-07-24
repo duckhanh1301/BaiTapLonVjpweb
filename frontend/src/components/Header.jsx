@@ -1,7 +1,7 @@
-import '../styles/Header.css'
+import { DoorOpen } from '@boxicons/react'
 import { NavLink } from 'react-router-dom'
 import { navigationItems } from './navigation'
-
+import '../styles/Header.css'
 
 function Header({ user, handleLogout }) {
     return (
@@ -19,15 +19,33 @@ function Header({ user, handleLogout }) {
                 ))}
             </nav>
 
-            <div className="sidebar-account pt-3 border-top">
-                <div className="text-muted small">
-                    {user?.email} <br />
-                    <span className="badge bg-info">{user?.role}</span>
+            <div className="sidebar-account">
+                <div className="sidebar-profile">
+                    <div className="sidebar-profile-info">
+                        <span className="sidebar-profile-label">Tài khoản</span>
+                        <strong title={user?.email}>
+                            {user?.email || 'Chưa cập nhật email'}
+                        </strong>
+                    </div>
                 </div>
+
+                <div className="sidebar-account-status">
+                    <span
+                        className={`sidebar-role${user?.role === 'Admin' ? ' is-admin' : ''}`}
+                    >
+                        <i aria-hidden="true" />
+                        {user?.role || 'Thành viên'}
+                    </span>
+                    <small>Đang hoạt động</small>
+                </div>
+
                 <button
-                    className="btn btn-sm btn-outline-danger w-100 mt-2"
-                    onClick={handleLogout}>
-                    Đăng xuất
+                    className="sidebar-logout"
+                    type="button"
+                    onClick={handleLogout}
+                >
+                    <DoorOpen aria-hidden="true" />
+                    <span>Đăng xuất</span>
                 </button>
             </div>
         </aside>

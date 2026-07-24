@@ -1,8 +1,63 @@
 const tenantModel = require("../models/tenantModel");
 
+const normalizeTenant = (body, MaTaiKhoan) => ({
+    MaTaiKhoan,
+    HoTen: typeof body.HoTen === "string" ? body.HoTen.trim() : "",
+    SoDienThoai:
+        typeof body.SoDienThoai === "string"
+            ? body.SoDienThoai.trim()
+            : "",
+    Email:
+        typeof body.Email === "string"
+            ? body.Email.trim() || null
+            : null,
+    CCCD: typeof body.CCCD === "string" ? body.CCCD.trim() : "",
+    NgaySinh: body.NgaySinh || null,
+    DiaChi:
+        typeof body.DiaChi === "string"
+            ? body.DiaChi.trim() || null
+            : null
+});
+
+const validateTenant = (tenant) => {
+    if (!tenant.HoTen || !tenant.SoDienThoai || !tenant.CCCD) {
+        return "Họ tên, số điện thoại và CCCD là bắt buộc";
+    }
+
+    if (!Number.isInteger(tenant.MaTaiKhoan) || tenant.MaTaiKhoan <= 0) {
+        return "Mã tài khoản người thuê không hợp lệ";
+    }
+
+    return null;
+};
+
+const validateTenantAccount = async (
+    accountId,
+    excludedTenantId = null
+) => {
+    const accountFound = await tenantModel.tenantAccountExists(accountId);
+
+    if (!accountFound) {
+        return "Tài khoản không tồn tại hoặc không có role NhanVien";
+    }
+
+    const alreadyLinked = await tenantModel.accountAlreadyLinked(
+        accountId,
+        excludedTenantId
+    );
+
+    return alreadyLinked
+        ? "Tài khoản này đã liên kết với một người thuê khác"
+        : null;
+};
+
 const getAllTenants = async (req, res) => {
     try {
-        const tenants = await tenantModel.getAllTenants();
+        const accountId = req.user.role === "NhanVien"
+            ? Number(req.user.id)
+            : null;
+        const tenants = await tenantModel.getAllTenants(accountId);
+
         res.status(200).json(tenants);
     } catch (error) {
         res.status(500).json({
@@ -14,29 +69,21 @@ const getAllTenants = async (req, res) => {
 
 const createTenant = async (req, res) => {
     try {
-        const {
-            HoTen,
-            SoDienThoai,
-            Email,
-            CCCD,
-            NgaySinh,
-            DiaChi
-        } = req.body;
+        const accountId = Number(req.body.MaTaiKhoan);
+        const tenant = normalizeTenant(req.body, accountId);
+        const validationError = validateTenant(tenant);
 
-        if (!HoTen || !SoDienThoai || !CCCD) {
-            return res.status(400).json({
-                message: "Họ tên, số điện thoại và CCCD là bắt buộc"
-            });
+        if (validationError) {
+            return res.status(400).json({ message: validationError });
         }
 
-        const result = await tenantModel.createTenant(
-            HoTen,
-            SoDienThoai,
-            Email,
-            CCCD,
-            NgaySinh,
-            DiaChi
-        );
+        const accountError = await validateTenantAccount(accountId);
+
+        if (accountError) {
+            return res.status(400).json({ message: accountError });
+        }
+
+        const result = await tenantModel.createTenant(tenant);
 
         res.status(201).json({
             message: "Thêm người thuê thành công",
@@ -45,7 +92,7 @@ const createTenant = async (req, res) => {
     } catch (error) {
         if (error.code === "ER_DUP_ENTRY") {
             return res.status(409).json({
-                message: "CCCD đã tồn tại"
+                message: "CCCD hoặc tài khoản người thuê đã tồn tại"
             });
         }
 
@@ -58,37 +105,48 @@ const createTenant = async (req, res) => {
 
 const updateTenant = async (req, res) => {
     try {
-        const { id } = req.params;
-        const {
-            HoTen,
-            SoDienThoai,
-            Email,
-            CCCD,
-            NgaySinh,
-            DiaChi
-        } = req.body;
+        const id = Number(req.params.id);
 
-        if (!HoTen || !SoDienThoai || !CCCD) {
+        if (!Number.isInteger(id) || id <= 0) {
             return res.status(400).json({
-                message: "Họ tên, số điện thoại và CCCD là bắt buộc"
+                message: "Mã người thuê không hợp lệ"
             });
         }
 
-        const result = await tenantModel.updateTenant(
-            id,
-            HoTen,
-            SoDienThoai,
-            Email,
-            CCCD,
-            NgaySinh,
-            DiaChi
-        );
+        const existingTenant = await tenantModel.getTenantById(id);
 
-        if (result.affectedRows === 0) {
+        if (!existingTenant) {
             return res.status(404).json({
                 message: "Không tìm thấy người thuê"
             });
         }
+
+        if (
+            req.user.role === "NhanVien"
+            && Number(existingTenant.MaTaiKhoan) !== Number(req.user.id)
+        ) {
+            return res.status(403).json({
+                message: "Bạn chỉ có thể cập nhật hồ sơ người thuê của mình"
+            });
+        }
+
+        const accountId = req.user.role === "NhanVien"
+            ? Number(req.user.id)
+            : Number(req.body.MaTaiKhoan ?? existingTenant.MaTaiKhoan);
+        const tenant = normalizeTenant(req.body, accountId);
+        const validationError = validateTenant(tenant);
+
+        if (validationError) {
+            return res.status(400).json({ message: validationError });
+        }
+
+        const accountError = await validateTenantAccount(accountId, id);
+
+        if (accountError) {
+            return res.status(400).json({ message: accountError });
+        }
+
+        await tenantModel.updateTenant(id, tenant);
 
         res.status(200).json({
             message: "Cập nhật người thuê thành công"
@@ -96,7 +154,7 @@ const updateTenant = async (req, res) => {
     } catch (error) {
         if (error.code === "ER_DUP_ENTRY") {
             return res.status(409).json({
-                message: "CCCD đã tồn tại"
+                message: "CCCD hoặc tài khoản người thuê đã tồn tại"
             });
         }
 
@@ -109,13 +167,23 @@ const updateTenant = async (req, res) => {
 
 const deleteTenant = async (req, res) => {
     try {
-        const result = await tenantModel.deleteTenant(req.params.id);
+        const id = Number(req.params.id);
 
-        if (result.affectedRows === 0) {
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                message: "Mã người thuê không hợp lệ"
+            });
+        }
+
+        const existingTenant = await tenantModel.getTenantById(id);
+
+        if (!existingTenant) {
             return res.status(404).json({
                 message: "Không tìm thấy người thuê"
             });
         }
+
+        await tenantModel.deleteTenant(id);
 
         res.status(200).json({
             message: "Xóa người thuê thành công"

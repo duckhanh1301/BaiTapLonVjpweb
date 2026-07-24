@@ -74,7 +74,140 @@
 
 .sidebar-account {
     margin-top: auto;
-    border-color: #e5e7eb !important;
+    padding: 14px;
+    border: 1px solid #e6e8f0;
+    border-radius: 16px;
+    background:
+        linear-gradient(145deg, rgba(99, 102, 241, 0.055), transparent 55%),
+        #fafbfc;
+    box-shadow: 0 8px 24px rgba(24, 29, 53, 0.055);
+    font-family: "Poppins", sans-serif;
+}
+
+.sidebar-profile {
+    min-width: 0;
+}
+
+.sidebar-profile-info {
+    min-width: 0;
+}
+
+.sidebar-profile-info strong,
+.sidebar-profile-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-profile-info strong {
+    color: #202437;
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.sidebar-profile-label {
+    margin-bottom: 4px;
+    color: #8b92a3;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.sidebar-account-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 13px 0 11px;
+    padding: 10px 0;
+    border-top: 1px solid #e9ebf1;
+    border-bottom: 1px solid #e9ebf1;
+}
+
+.sidebar-role {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #edf8f4;
+    color: #16835f;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.sidebar-role i {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #1db681;
+    box-shadow: 0 0 0 3px rgba(29, 182, 129, 0.11);
+}
+
+.sidebar-role.is-admin {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.sidebar-role.is-admin i {
+    background: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.11);
+}
+
+.sidebar-account-status small {
+    color: #a0a6b5;
+    font-size: 8px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sidebar-logout {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid #ffd9e0;
+    border-radius: 10px;
+    outline: none;
+    background: #fff4f6;
+    color: #d93452;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+    font-weight: 650;
+    transition:
+        border-color 180ms ease,
+        background-color 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+}
+
+.sidebar-logout svg {
+    width: 17px;
+    height: 17px;
+}
+
+.sidebar-logout:hover {
+    border-color: #f43f5e;
+    background: #f43f5e;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.sidebar-logout:focus-visible {
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18);
+}
+
+.sidebar-logout:active {
+    transform: translateY(0);
 }
 
 .page-header {

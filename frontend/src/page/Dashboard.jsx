@@ -1,10 +1,33 @@
-
-import { useState, useEffect } from 'react';
-import { getCurrentUser } from '../services/authService';
-import { getSummary, getRevenueByMonth, getApartmentStatus, getRevenueByBuilding } from '../services/dashboardService';
+import { useEffect, useMemo, useState } from 'react';
+import {
+    Apartment,
+    Buildings,
+    Calendar,
+    DoorOpen,
+    Key,
+    Wallet,
+} from '@boxicons/react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import {
+    ArcElement,
+    BarElement,
+    CategoryScale,
     Chart as ChartJS,
+    Legend,
+    LinearScale,
+    Title,
+    Tooltip,
+} from 'chart.js';
+import { getCurrentUser } from '../services/authService';
+import {
+    getApartmentStatus,
+    getRevenueByBuilding,
+    getRevenueByMonth,
+    getSummary,
+} from '../services/dashboardService';
+import '../styles/Dashboard.css';
+
+ChartJS.register(
     CategoryScale,
     LinearScale,
     BarElement,
@@ -12,10 +35,11 @@ import {
     Tooltip,
     Legend,
     ArcElement,
-} from 'chart.js';
+);
 
-// Đăng ký các thành phần Chart.js
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+const formatCurrency = (value) => (
+    `${Number(value || 0).toLocaleString('vi-VN')}đ`
+);
 
 const Dashboard = () => {
     const user = getCurrentUser();
@@ -57,154 +81,268 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
+
         fetchAllData();
     }, [isAdmin]);
 
-    // Nếu không phải Admin, hiển thị thông báo
+    const monthChartData = useMemo(() => ({
+        labels: revenueByMonth.length
+            ? revenueByMonth.map((item) => item.month)
+            : ['Không có dữ liệu'],
+        datasets: [{
+            label: 'Doanh thu',
+            data: revenueByMonth.length
+                ? revenueByMonth.map((item) => item.revenue)
+                : [0],
+            backgroundColor: '#6366f1',
+            borderColor: '#4f46e5',
+            borderRadius: 8,
+            borderSkipped: false,
+            maxBarThickness: 42,
+        }],
+    }), [revenueByMonth]);
+
+    const statusChartData = useMemo(() => ({
+        labels: ['Đã thuê', 'Còn trống'],
+        datasets: [{
+            data: [apartmentStatus.rented, apartmentStatus.empty],
+            backgroundColor: ['#4f46e5', '#e8eaf2'],
+            borderColor: ['#ffffff', '#ffffff'],
+            borderWidth: 4,
+            hoverBackgroundColor: ['#4338ca', '#d9dce8'],
+            hoverOffset: 3,
+        }],
+    }), [apartmentStatus]);
+
+    const buildingChartData = useMemo(() => ({
+        labels: revenueByBuilding.length
+            ? revenueByBuilding.map((item) => item.TenToaNha || item.tenToaNha)
+            : ['Không có dữ liệu'],
+        datasets: [{
+            label: 'Doanh thu',
+            data: revenueByBuilding.length
+                ? revenueByBuilding.map((item) => item.revenue)
+                : [0],
+            backgroundColor: '#10b981',
+            borderColor: '#059669',
+            borderRadius: 8,
+            borderSkipped: false,
+            maxBarThickness: 54,
+        }],
+    }), [revenueByBuilding]);
+
+    const barChartOptions = useMemo(() => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#111827',
+                padding: 12,
+                cornerRadius: 10,
+                callbacks: {
+                    label: (context) => ` ${formatCurrency(context.raw)}`,
+                },
+            },
+        },
+        scales: {
+            x: {
+                grid: { display: false },
+                border: { display: false },
+                ticks: {
+                    color: '#7c8497',
+                    font: { family: 'Poppins', size: 11 },
+                },
+            },
+            y: {
+                beginAtZero: true,
+                border: { display: false },
+                grid: { color: '#eef0f5' },
+                ticks: {
+                    color: '#7c8497',
+                    font: { family: 'Poppins', size: 11 },
+                    callback: (value) => (
+                        value >= 1000000
+                            ? `${value / 1000000}tr`
+                            : Number(value).toLocaleString('vi-VN')
+                    ),
+                },
+            },
+        },
+    }), []);
+
+    const doughnutOptions = useMemo(() => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '74%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#111827',
+                padding: 12,
+                cornerRadius: 10,
+            },
+        },
+    }), []);
+
+    const totalStatusApartments = Number(apartmentStatus.rented || 0)
+        + Number(apartmentStatus.empty || 0);
+    const occupancyRate = totalStatusApartments
+        ? Math.round((Number(apartmentStatus.rented || 0) / totalStatusApartments) * 100)
+        : 0;
+
+    const statisticCards = [
+        {
+            label: 'Tổng tòa nhà',
+            value: summary.totalBuildings,
+            note: 'Toàn hệ thống',
+            icon: Buildings,
+            tone: 'indigo',
+        },
+        {
+            label: 'Tổng căn hộ',
+            value: summary.totalApartments,
+            note: 'Đang quản lý',
+            icon: Apartment,
+            tone: 'blue',
+        },
+        {
+            label: 'Đang thuê',
+            value: summary.rentedApartments,
+            note: `${occupancyRate}% công suất`,
+            icon: Key,
+            tone: 'green',
+        },
+        {
+            label: 'Còn trống',
+            value: summary.emptyApartments,
+            note: 'Sẵn sàng cho thuê',
+            icon: DoorOpen,
+            tone: 'orange',
+        },
+        {
+            label: 'Doanh thu tháng',
+            value: formatCurrency(summary.revenueThisMonth),
+            note: 'Tổng thu hiện tại',
+            icon: Wallet,
+            tone: 'violet',
+            featured: true,
+        },
+        {
+            label: 'HĐ sắp hết hạn',
+            value: summary.expiringContracts,
+            note: 'Cần theo dõi',
+            icon: Calendar,
+            tone: 'red',
+        },
+    ];
+
     if (!isAdmin) {
         return (
-            <div className="container mt-5">
-                <div className="alert alert-danger">
-                    <h4>⚠️ Truy cập bị từ chối</h4>
-                    <p>Bạn không có quyền xem trang Dashboard. Chỉ Admin mới có quyền truy cập.</p>
-                </div>
+            <div className="dashboard-access-denied" role="alert">
+                <div className="dashboard-access-icon">!</div>
+                <span>Quyền truy cập</span>
+                <h2>Không thể mở Dashboard</h2>
+                <p>Trang tổng quan chỉ dành cho tài khoản có quyền Admin.</p>
             </div>
         );
     }
 
-    // Dữ liệu cho biểu đồ doanh thu theo tháng
-    const monthLabels = revenueByMonth.map(item => item.month);
-    const monthData = revenueByMonth.map(item => item.revenue);
-
-    const monthChartData = {
-        labels: monthLabels.length ? monthLabels : ['Không có dữ liệu'],
-        datasets: [
-            {
-                label: 'Doanh thu (VNĐ)',
-                data: monthData.length ? monthData : [0],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    // Dữ liệu cho biểu đồ tỷ lệ căn hộ
-    const statusChartData = {
-        labels: ['Đã thuê', 'Trống'],
-        datasets: [
-            {
-                data: [apartmentStatus.rented, apartmentStatus.empty],
-                backgroundColor: ['#36A2EB', '#FF6384'],
-                hoverBackgroundColor: ['#36A2EB', '#FF6384'],
-            },
-        ],
-    };
-
-    // Dữ liệu cho biểu đồ doanh thu theo tòa nhà
-    const buildingLabels = revenueByBuilding.map(item => item.TenToaNha || item.tenToaNha);
-    const buildingData = revenueByBuilding.map(item => item.revenue);
-
-    const buildingChartData = {
-        labels: buildingLabels.length ? buildingLabels : ['Không có dữ liệu'],
-        datasets: [
-            {
-                label: 'Doanh thu (VNĐ)',
-                data: buildingData.length ? buildingData : [0],
-                backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                borderColor: 'rgba(255, 159, 64, 1)',
-                borderWidth: 1,
-            },
-        ],
-    };
-
     if (loading) {
-        return <div className="text-center mt-5"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>;
+        return (
+            <div className="dashboard-loading" aria-live="polite">
+                <div className="dashboard-loader" />
+                <strong>Đang chuẩn bị dữ liệu</strong>
+                <span>Vui lòng chờ trong giây lát...</span>
+            </div>
+        );
     }
 
     return (
-        <div>
-            {/* 6 card thống kê */}
-            <div className="row">
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-primary">
-                        <div className="card-body">
-                            <h6 className="card-title">🏢 Tổng tòa nhà</h6>
-                            <h3>{summary.totalBuildings}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-success">
-                        <div className="card-body">
-                            <h6 className="card-title">🏠 Tổng căn hộ</h6>
-                            <h3>{summary.totalApartments}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-warning">
-                        <div className="card-body">
-                            <h6 className="card-title">🔑 Đang thuê</h6>
-                            <h3>{summary.rentedApartments}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-danger">
-                        <div className="card-body">
-                            <h6 className="card-title">🔄 Trống</h6>
-                            <h3>{summary.emptyApartments}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-info">
-                        <div className="card-body">
-                            <h6 className="card-title">💰 Doanh thu tháng</h6>
-                            <h3>{summary.revenueThisMonth.toLocaleString()}đ</h3>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-2 col-sm-6 mb-3">
-                    <div className="card text-white bg-secondary">
-                        <div className="card-body">
-                            <h6 className="card-title">📄 HĐ sắp hết hạn</h6>
-                            <h3>{summary.expiringContracts}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="dashboard-page">
+            <section className="dashboard-stats" aria-label="Thống kê tổng quan">
+                {statisticCards.map((card) => {
+                    const Icon = card.icon;
 
-            {/* 3 biểu đồ */}
-            <div className="row mt-4">
-                <div className="col-md-6 mb-4">
-                    <div className="card">
-                        <div className="card-header">📈 Doanh thu theo tháng</div>
-                        <div className="card-body">
-                            <Bar data={monthChartData} options={{ responsive: true }} />
+                    return (
+                        <article
+                            className={`dashboard-stat dashboard-stat--${card.tone}${card.featured ? ' dashboard-stat--featured' : ''}`}
+                            key={card.label}
+                        >
+                            <div className="dashboard-stat-icon">
+                                <Icon aria-hidden="true" />
+                            </div>
+                            <div className="dashboard-stat-content">
+                                <span>{card.label}</span>
+                                <strong>{card.value}</strong>
+                                <small>{card.note}</small>
+                            </div>
+                        </article>
+                    );
+                })}
+            </section>
+
+            <section className="dashboard-charts">
+                <article className="dashboard-panel dashboard-panel--revenue">
+                    <div className="dashboard-panel-header">
+                        <div>
+                            <span>Doanh thu</span>
+                            <h3>Doanh thu theo tháng</h3>
+                        </div>
+                        <div className="dashboard-legend dashboard-legend--indigo">
+                            <i aria-hidden="true" />
+                            VNĐ
                         </div>
                     </div>
-                </div>
-                <div className="col-md-6 mb-4">
-                    <div className="card">
-                        <div className="card-header">🥧 Tỷ lệ căn hộ</div>
-                        <div className="card-body d-flex justify-content-center">
-                            <div style={{ width: '250px' }}>
-                                <Doughnut data={statusChartData} />
+                    <div className="dashboard-chart dashboard-chart--bar">
+                        <Bar data={monthChartData} options={barChartOptions} />
+                    </div>
+                </article>
+
+                <article className="dashboard-panel dashboard-panel--occupancy">
+                    <div className="dashboard-panel-header">
+                        <div>
+                            <span>Công suất</span>
+                            <h3>Tỷ lệ căn hộ</h3>
+                        </div>
+                    </div>
+                    <div className="dashboard-doughnut">
+                        <div className="dashboard-chart dashboard-chart--doughnut">
+                            <Doughnut data={statusChartData} options={doughnutOptions} />
+                            <div className="dashboard-doughnut-center">
+                                <strong>{occupancyRate}%</strong>
+                                <span>đã thuê</span>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="col-md-12 mb-4">
-                    <div className="card">
-                        <div className="card-header">🏢 Doanh thu theo tòa nhà</div>
-                        <div className="card-body">
-                            <Bar data={buildingChartData} options={{ responsive: true }} />
+                    <div className="dashboard-status-list">
+                        <div>
+                            <span><i className="is-rented" />Đã thuê</span>
+                            <strong>{apartmentStatus.rented}</strong>
+                        </div>
+                        <div>
+                            <span><i className="is-empty" />Còn trống</span>
+                            <strong>{apartmentStatus.empty}</strong>
                         </div>
                     </div>
-                </div>
-            </div>
+                </article>
+
+                <article className="dashboard-panel dashboard-panel--building">
+                    <div className="dashboard-panel-header">
+                        <div>
+                            <span>Hiệu suất</span>
+                            <h3>Doanh thu theo tòa nhà</h3>
+                        </div>
+                        <div className="dashboard-legend dashboard-legend--green">
+                            <i aria-hidden="true" />
+                            VNĐ
+                        </div>
+                    </div>
+                    <div className="dashboard-chart dashboard-chart--building">
+                        <Bar data={buildingChartData} options={barChartOptions} />
+                    </div>
+                </article>
+            </section>
         </div>
     );
 };

@@ -1,55 +1,103 @@
 const db = require("../config/db");
 
-// Lấy danh sách người thuê
-const getAllTenants = async () => {
-    const [rows] = await db.query(`
-        SELECT *
-        FROM NguoiThue
-        ORDER BY MaNguoiThue DESC
-    `);
+const getAllTenants = async (accountId = null) => {
+    let sql = `
+        SELECT
+            nt.*,
+            tk.email AS EmailTaiKhoan
+        FROM NguoiThue nt
+        LEFT JOIN TaiKhoan tk
+            ON nt.MaTaiKhoan = tk.id
+    `;
+    const params = [];
 
+    if (accountId !== null) {
+        sql += " WHERE nt.MaTaiKhoan = ?";
+        params.push(accountId);
+    }
+
+    sql += " ORDER BY nt.MaNguoiThue DESC";
+
+    const [rows] = await db.query(sql, params);
     return rows;
 };
 
-// Thêm người thuê
-const createTenant = async (
-    HoTen,
-    SoDienThoai,
-    Email,
-    CCCD,
-    NgaySinh,
-    DiaChi
-) => {
+const getTenantById = async (id) => {
+    const [rows] = await db.query(
+        `SELECT *
+         FROM NguoiThue
+         WHERE MaNguoiThue = ?
+         LIMIT 1`,
+        [id]
+    );
+
+    return rows[0] || null;
+};
+
+const tenantAccountExists = async (id) => {
+    const [rows] = await db.query(
+        `SELECT 1
+         FROM TaiKhoan
+         WHERE id = ?
+           AND role = 'NhanVien'
+         LIMIT 1`,
+        [id]
+    );
+
+    return rows.length > 0;
+};
+
+const accountAlreadyLinked = async (accountId, excludedTenantId = null) => {
+    let sql = `
+        SELECT 1
+        FROM NguoiThue
+        WHERE MaTaiKhoan = ?
+    `;
+    const params = [accountId];
+
+    if (excludedTenantId !== null) {
+        sql += " AND MaNguoiThue <> ?";
+        params.push(excludedTenantId);
+    }
+
+    sql += " LIMIT 1";
+
+    const [rows] = await db.query(sql, params);
+    return rows.length > 0;
+};
+
+const createTenant = async (tenant) => {
     const [result] = await db.query(
         `INSERT INTO NguoiThue
-        (HoTen, SoDienThoai, Email, CCCD, NgaySinh, DiaChi)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [
+        (
+            MaTaiKhoan,
             HoTen,
             SoDienThoai,
-            Email || null,
+            Email,
             CCCD,
-            NgaySinh || null,
-            DiaChi || null
+            NgaySinh,
+            DiaChi
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+            tenant.MaTaiKhoan,
+            tenant.HoTen,
+            tenant.SoDienThoai,
+            tenant.Email,
+            tenant.CCCD,
+            tenant.NgaySinh,
+            tenant.DiaChi
         ]
     );
 
     return result;
 };
 
-// Cập nhật người thuê
-const updateTenant = async (
-    id,
-    HoTen,
-    SoDienThoai,
-    Email,
-    CCCD,
-    NgaySinh,
-    DiaChi
-) => {
+const updateTenant = async (id, tenant) => {
     const [result] = await db.query(
         `UPDATE NguoiThue
-        SET HoTen = ?,
+        SET MaTaiKhoan = ?,
+            HoTen = ?,
             SoDienThoai = ?,
             Email = ?,
             CCCD = ?,
@@ -57,12 +105,13 @@ const updateTenant = async (
             DiaChi = ?
         WHERE MaNguoiThue = ?`,
         [
-            HoTen,
-            SoDienThoai,
-            Email || null,
-            CCCD,
-            NgaySinh || null,
-            DiaChi || null,
+            tenant.MaTaiKhoan,
+            tenant.HoTen,
+            tenant.SoDienThoai,
+            tenant.Email,
+            tenant.CCCD,
+            tenant.NgaySinh,
+            tenant.DiaChi,
             id
         ]
     );
@@ -70,7 +119,6 @@ const updateTenant = async (
     return result;
 };
 
-// Xóa người thuê
 const deleteTenant = async (id) => {
     const [result] = await db.query(
         "DELETE FROM NguoiThue WHERE MaNguoiThue = ?",
@@ -82,6 +130,9 @@ const deleteTenant = async (id) => {
 
 module.exports = {
     getAllTenants,
+    getTenantById,
+    tenantAccountExists,
+    accountAlreadyLinked,
     createTenant,
     updateTenant,
     deleteTenant
