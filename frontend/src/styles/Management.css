@@ -24,6 +24,13 @@
     min-width: 0;
 }
 
+.management-hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 .management-eyebrow,
 .management-modal-eyebrow {
     display: block;
@@ -100,6 +107,13 @@
 .management-primary-button:active,
 .management-secondary-button:active {
     transform: translateY(0);
+}
+
+.management-primary-button:disabled,
+.management-secondary-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
 }
 
 .management-primary-button svg,
@@ -1105,6 +1119,10 @@
     }
 
     .management-hero .management-primary-button {
+        align-self: flex-start;
+    }
+
+    .management-hero-actions {
         align-self: flex-start;
     }
 

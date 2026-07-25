@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaFileExcel } from "react-icons/fa";
 import {
     Apartment,
     Bath,
@@ -21,6 +22,7 @@ import {
 } from "../services/apartmentService";
 
 import { getAllBuildings } from "../services/buildingService";
+import { exportApartmentList } from "../services/exportService";
 import { getImages, uploadImage, deleteImage } from "../services/imageService";
 import ApartmentForm from "../components/ApartmentForm";
 import UploadImage from "../components/UploadImage";
@@ -32,18 +34,7 @@ const formatCurrency = (value) => (
 
 const ApartmentPage = () => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (!user || user.role !== 'Admin') {
-        return (
-            <div className="management-page">
-                <section className="management-hero">
-                    <div className="management-heading">
-                        <h2>Truy cập bị từ chối</h2>
-                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
-                    </div>
-                </section>
-            </div>
-        );
-    }
+    const isAdmin = user?.role === 'Admin';
     const [apartments, setApartments] = useState([]);
     const [buildings, setBuildings] = useState([]);
     const [keyword, setKeyword] = useState("");
@@ -52,6 +43,7 @@ const ApartmentPage = () => {
     const [showImageModal, setShowImageModal] = useState(false);
     const [imageApartment, setImageApartment] = useState(null);
     const [images, setImages] = useState([]);
+    const [isExporting, setIsExporting] = useState(false);
 
     const loadApartments = async () => {
         try {
@@ -64,6 +56,8 @@ const ApartmentPage = () => {
     };
 
     useEffect(() => {
+        if (!isAdmin) return undefined;
+
         const fetchInitialData = async () => {
             try {
                 const [apartmentData, buildingData] = await Promise.all([
@@ -79,7 +73,8 @@ const ApartmentPage = () => {
         };
 
         fetchInitialData();
-    }, []);
+        return undefined;
+    }, [isAdmin]);
 
     const loadImages = async (maCanHo) => {
         try {
@@ -184,6 +179,22 @@ const ApartmentPage = () => {
         }
     };
 
+    const handleExport = async () => {
+        if (isExporting) return;
+
+        setIsExporting(true);
+        try {
+            await exportApartmentList();
+        } catch (err) {
+            console.error(err);
+            const message = err?.response?.data?.message
+                || "Không thể xuất danh sách căn hộ";
+            alert(message);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     const getStatusClassName = (status) => {
         const normalizedStatus = String(status || "").toLocaleLowerCase("vi");
 
@@ -191,6 +202,19 @@ const ApartmentPage = () => {
         if (normalizedStatus.includes("thuê")) return "is-rented";
         return "is-neutral";
     };
+
+    if (!isAdmin) {
+        return (
+            <div className="management-page">
+                <section className="management-hero">
+                    <div className="management-heading">
+                        <h2>Truy cập bị từ chối</h2>
+                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
+                    </div>
+                </section>
+            </div>
+        );
+    }
 
     return (
         <div className="management-page">
@@ -201,14 +225,28 @@ const ApartmentPage = () => {
                     <p>Theo dõi giá thuê, trạng thái và thông tin vận hành căn hộ.</p>
                 </div>
 
-                <button
-                    className="management-primary-button"
-                    type="button"
-                    onClick={handleAdd}
-                >
-                    <Plus aria-hidden="true" />
-                    <span>Thêm căn hộ</span>
-                </button>
+                <div className="management-hero-actions">
+                    <button
+                        className="management-secondary-button"
+                        type="button"
+                        onClick={handleExport}
+                        disabled={isExporting}
+                    >
+                        <FaFileExcel aria-hidden="true" />
+                        <span>
+                            {isExporting ? "Đang xuất..." : "Xuất danh sách"}
+                        </span>
+                    </button>
+
+                    <button
+                        className="management-primary-button"
+                        type="button"
+                        onClick={handleAdd}
+                    >
+                        <Plus aria-hidden="true" />
+                        <span>Thêm căn hộ</span>
+                    </button>
+                </div>
             </section>
 
             <section className="management-panel">
