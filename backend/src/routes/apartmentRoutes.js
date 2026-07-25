@@ -3,13 +3,15 @@ const express = require("express");
 const router = express.Router();
 
 const apartmentController = require("../controllers/apartmentController");
+const authMiddleware = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 
-router.get("/", apartmentController.getAllApartments);
+router.get("/", authMiddleware, authorizeRoles("Admin"), apartmentController.getAllApartments);
 
 // Search phải đặt trước :id
-router.get("/search", apartmentController.searchApartments);
+router.get("/search", authMiddleware, authorizeRoles("Admin"), apartmentController.searchApartments);
 
-router.get("/:id", apartmentController.getApartmentById);
+router.get("/:id", authMiddleware, authorizeRoles("Admin"), apartmentController.getApartmentById);
 
 router.post("/", apartmentController.createApartment);
 
