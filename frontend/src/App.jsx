@@ -6,6 +6,7 @@ import SectionPage from './page/SectionPage';
 import PrivateRoute from './components/PrivateRoute';
 import BuildingPage from "./page/BuildingPage";
 import ApartmentPage from "./page/ApartmentPage";
+import TenantPage from "./page/TenantPage";
 import Layout from './components/Layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -26,8 +27,8 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/apartments" element={<ApartmentPage />} />
                     <Route path="/buildings" element={<BuildingPage />} />
-                    <Route path="/tenants" element={<SectionPage name="Người Thuê" />} />
-                    <Route path="/statistics" element={<SectionPage name="Thống Kê" />} />
+                    <Route path="/tenants" element={<TenantPage />} />
+                    <Route path="/contracts" element={<SectionPage name="Hợp Đồng" />} />
                     <Route path="/profile" element={<SectionPage name="Cá Nhân" />} />
                 </Route>
                 <Route 

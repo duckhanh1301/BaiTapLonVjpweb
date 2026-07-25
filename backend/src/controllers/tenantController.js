@@ -67,6 +67,18 @@ const getAllTenants = async (req, res) => {
     }
 };
 
+const getTenantAccounts = async (req, res) => {
+    try {
+        const accounts = await tenantModel.getTenantAccounts();
+        res.status(200).json(accounts);
+    } catch (error) {
+        res.status(500).json({
+            message: "Lỗi lấy danh sách tài khoản người thuê",
+            error: error.message
+        });
+    }
+};
+
 const createTenant = async (req, res) => {
     try {
         const accountId = Number(req.body.MaTaiKhoan);
@@ -204,6 +216,7 @@ const deleteTenant = async (req, res) => {
 
 module.exports = {
     getAllTenants,
+    getTenantAccounts,
     createTenant,
     updateTenant,
     deleteTenant

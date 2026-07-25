@@ -11,12 +11,6 @@ router.get(
     authorizeRoles("Admin", "NhanVien"),
     tenantController.getAllTenants
 );
-router.post(
-    "/",
-    authMiddleware,
-    authorizeRoles("Admin"),
-    tenantController.createTenant
-);
 router.put(
     "/:id",
     authMiddleware,

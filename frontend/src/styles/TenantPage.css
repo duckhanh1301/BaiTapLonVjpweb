@@ -1,0 +1,754 @@
+.tenant-page {
+    --tenant-ink: #172033;
+    --tenant-muted: #737b8c;
+    --tenant-line: #e8eaf0;
+    --tenant-purple: #6d5dfc;
+    --management-ink: #171a2b;
+    --management-muted: #7b8294;
+    --management-border: #e6e8f0;
+    --management-primary: #6d5dfc;
+    --management-primary-dark: #5e4ff0;
+    --management-primary-soft: #f0edff;
+    min-height: calc(100vh - 40px);
+    padding: 12px 12px 32px;
+    color: var(--tenant-ink);
+    font-family: "Inter", "Poppins", sans-serif;
+}
+
+.tenant-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.tenant-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--tenant-purple);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.tenant-heading h1 {
+    margin: 0;
+    color: #182033;
+    font-size: clamp(27px, 3vw, 36px);
+    font-weight: 750;
+    letter-spacing: -.045em;
+}
+
+.tenant-heading p {
+    margin: 8px 0 0;
+    color: #7c8495;
+    font-size: 14px;
+}
+
+.tenant-add-button {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 19px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--tenant-purple);
+    box-shadow: 0 10px 22px rgba(109, 93, 252, .23);
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.tenant-add-button:hover {
+    background: #5e4ff0;
+    box-shadow: 0 13px 26px rgba(109, 93, 252, .3);
+    transform: translateY(-2px);
+}
+
+.tenant-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.tenant-stat-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid rgba(229, 231, 239, .88);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 6px 24px rgba(28, 34, 51, .045);
+}
+
+.tenant-stat-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 13px;
+    font-size: 18px;
+}
+
+.tenant-stat-card.is-purple .tenant-stat-icon {
+    background: #f0edff;
+    color: #705dfb;
+}
+
+.tenant-stat-card.is-green .tenant-stat-icon {
+    background: #eaf8f2;
+    color: #19a671;
+}
+
+.tenant-stat-card.is-blue .tenant-stat-icon {
+    background: #eaf4ff;
+    color: #3689e6;
+}
+
+.tenant-stat-card.is-orange .tenant-stat-icon {
+    background: #fff3e8;
+    color: #eb8a39;
+}
+
+.tenant-stat-card > div {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    column-gap: 8px;
+}
+
+.tenant-stat-card small {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    color: #81899a;
+    font-size: 11px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tenant-stat-card strong {
+    color: #20283b;
+    font-size: 25px;
+    font-weight: 750;
+    letter-spacing: -.04em;
+}
+
+.tenant-stat-card p {
+    margin: 0;
+    overflow: hidden;
+    color: #a0a6b3;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tenant-panel {
+    overflow: hidden;
+    border: 1px solid var(--tenant-line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 10px 36px rgba(27, 34, 55, .055);
+}
+
+.tenant-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 21px 22px;
+    border-bottom: 1px solid #eceef3;
+}
+
+.tenant-panel-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -.02em;
+}
+
+.tenant-panel-header p {
+    margin: 5px 0 0;
+    color: #9299a8;
+    font-size: 11px;
+}
+
+.tenant-panel-header p strong {
+    color: var(--tenant-purple);
+}
+
+.tenant-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tenant-search {
+    display: grid;
+    width: min(310px, 31vw);
+    min-height: 40px;
+    grid-template-columns: 16px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    padding: 0 13px;
+    border: 1px solid #e4e6ec;
+    border-radius: 10px;
+    background: #fafbfc;
+    color: #a3a9b6;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.tenant-search:focus-within {
+    border-color: #a79cff;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(109, 93, 252, .1);
+}
+
+.tenant-search input {
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #333a4b;
+    font: inherit;
+    font-size: 11px;
+}
+
+.tenant-search input::placeholder {
+    color: #acb1bd;
+}
+
+.tenant-filter {
+    min-height: 40px;
+    padding: 0 34px 0 13px;
+    border: 1px solid #e4e6ec;
+    border-radius: 10px;
+    outline: 0;
+    background-color: #fafbfc;
+    color: #5f6676;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+}
+
+.tenant-filter:focus {
+    border-color: #a79cff;
+    box-shadow: 0 0 0 3px rgba(109, 93, 252, .1);
+}
+
+.tenant-table-wrap {
+    overflow-x: auto;
+}
+
+.tenant-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.tenant-table th {
+    padding: 13px 16px;
+    border-bottom: 1px solid #e9ebf0;
+    background: #fafbfc;
+    color: #9299a8;
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: .07em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.tenant-table th:nth-child(1) { width: 19%; }
+.tenant-table th:nth-child(2) { width: 14%; }
+.tenant-table th:nth-child(3) { width: 25%; }
+.tenant-table th:nth-child(4) { width: 20%; }
+.tenant-table th:nth-child(5) { width: 13%; }
+.tenant-table th:nth-child(6) { width: 9%; }
+
+.tenant-table td {
+    padding: 15px 16px;
+    border-bottom: 1px solid #eff0f4;
+    color: #4b5262;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.tenant-table tbody tr {
+    transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.tenant-table tbody tr:hover {
+    background: #fbfbfe;
+    box-shadow: inset 3px 0 0 #7b6dfc;
+}
+
+.tenant-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tenant-person,
+.tenant-apartment {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+}
+
+.tenant-avatar {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #8b7dff, #6253ed);
+    box-shadow: 0 6px 13px rgba(100, 84, 234, .2);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+
+.tenant-person > div,
+.tenant-apartment > div,
+.tenant-building {
+    min-width: 0;
+}
+
+.tenant-person strong,
+.tenant-apartment strong,
+.tenant-building strong {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    color: #293043;
+    font-size: 11px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tenant-person small,
+.tenant-apartment small,
+.tenant-building small {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    overflow: hidden;
+    color: #9ba1af;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tenant-apartment > span {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 9px;
+    background: #eef5ff;
+    color: #438ee2;
+    font-size: 12px;
+}
+
+.tenant-building strong svg,
+.tenant-building small svg {
+    flex: 0 0 auto;
+    color: #959dab;
+    font-size: 9px;
+}
+
+.tenant-contact {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.tenant-contact a {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 7px;
+    overflow: hidden;
+    color: #555d6e;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tenant-contact a:hover {
+    color: #6253ed;
+}
+
+.tenant-contact svg {
+    width: 10px;
+    flex: 0 0 auto;
+    color: #9ba2af;
+}
+
+.tenant-contact small,
+.tenant-muted {
+    color: #a3a9b5;
+    font-size: 10px;
+}
+
+.tenant-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tenant-status i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+
+.tenant-status.is-active {
+    background: #eaf8f2;
+    color: #168d62;
+}
+
+.tenant-status.is-active i {
+    background: #22b27d;
+    box-shadow: 0 0 0 3px rgba(34, 178, 125, .11);
+}
+
+.tenant-status.is-pending {
+    background: #fff3e8;
+    color: #c96e25;
+}
+
+.tenant-status.is-pending i {
+    background: #ee8d3c;
+}
+
+.tenant-status.is-inactive {
+    background: #f0f1f4;
+    color: #747b89;
+}
+
+.tenant-status.is-inactive i {
+    background: #9399a5;
+}
+
+.tenant-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.tenant-actions button {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid #e5e7ed;
+    border-radius: 8px;
+    background: #fff;
+    color: #7b8290;
+    cursor: pointer;
+    font-size: 10px;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.tenant-actions button:hover {
+    border-color: #7668f5;
+    background: #f0edff;
+    color: #6556ec;
+    transform: translateY(-1px);
+}
+
+.tenant-actions button.is-delete:hover {
+    border-color: #ffccd4;
+    background: #fff0f3;
+    color: #e3405b;
+}
+
+.tenant-empty {
+    display: flex;
+    min-height: 280px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.tenant-empty > span {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border-radius: 17px;
+    background: #f0edff;
+    color: #6d5dfc;
+    font-size: 22px;
+}
+
+.tenant-empty h3 {
+    margin: 15px 0 6px;
+    color: #343b4d;
+    font-size: 14px;
+}
+
+.tenant-empty p {
+    margin: 0 0 15px;
+    color: #949aa8;
+}
+
+.tenant-empty button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 9px;
+    background: #6d5dfc;
+    color: #fff;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tenant-page-error,
+.tenant-form-error {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 14px 18px 0;
+    padding: 11px 13px;
+    border: 1px solid #ffd6dc;
+    border-radius: 10px;
+    background: #fff4f6;
+    color: #c93650;
+    font-size: 11px;
+}
+
+.tenant-page-error button {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.tenant-form-error {
+    margin: 0 0 17px;
+}
+
+.tenant-field-help {
+    margin-top: 6px;
+    color: #8d95a5;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.tenant-toast {
+    position: fixed;
+    top: 20px;
+    right: 22px;
+    z-index: 2000;
+    padding: 11px 16px;
+    border: 1px solid #ccecdf;
+    border-radius: 11px;
+    background: #edfaf5;
+    box-shadow: 0 12px 32px rgba(34, 55, 47, .15);
+    color: #16865e;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tenant-skeleton-row td {
+    height: 66px;
+}
+
+.tenant-skeleton-row td span {
+    display: block;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(90deg, #f3f4f7 25%, #e9ebf0 50%, #f3f4f7 75%);
+    background-size: 200% 100%;
+    animation: tenant-shimmer 1.4s infinite;
+}
+
+@keyframes tenant-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+
+.tenant-modal-icon {
+    background: #f0edff;
+    color: #6d5dfc;
+}
+
+.tenant-contract-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid #dceafb;
+    border-radius: 12px;
+    background: #f6faff;
+}
+
+.tenant-contract-note > span {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 10px;
+    background: #e7f2ff;
+    color: #428ad8;
+}
+
+.tenant-contract-note > div {
+    min-width: 0;
+}
+
+.tenant-contract-note small,
+.tenant-contract-note strong {
+    display: block;
+}
+
+.tenant-contract-note small {
+    color: #7d8b9c;
+    font-size: 9px;
+    font-weight: 650;
+    text-transform: uppercase;
+}
+
+.tenant-contract-note strong {
+    margin-top: 3px;
+    color: #334155;
+    font-size: 12px;
+}
+
+.tenant-contract-note p {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 5px 0 0;
+    color: #8390a1;
+    font-size: 9px;
+}
+
+.tenant-access-denied {
+    display: flex;
+    min-height: 65vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #8d95a4;
+    text-align: center;
+}
+
+.tenant-access-denied > svg {
+    margin-bottom: 14px;
+    color: #e99a51;
+    font-size: 34px;
+}
+
+.tenant-access-denied h2 {
+    margin: 0 0 7px;
+    color: #343b4c;
+    font-size: 20px;
+}
+
+.tenant-access-denied p {
+    margin: 0;
+    font-size: 13px;
+}
+
+@media (max-width: 1150px) {
+    .tenant-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tenant-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tenant-toolbar {
+        width: 100%;
+    }
+
+    .tenant-search {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .tenant-page {
+        padding: 8px 4px 24px;
+    }
+
+    .tenant-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tenant-add-button {
+        align-self: flex-start;
+    }
+
+    .tenant-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tenant-filter {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .tenant-stat-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tenant-panel-header {
+        padding: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tenant-add-button,
+    .tenant-actions button,
+    .tenant-table tbody tr {
+        transition: none;
+    }
+
+    .tenant-skeleton-row td span {
+        animation: none;
+    }
+}
