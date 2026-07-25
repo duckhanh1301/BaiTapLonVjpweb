@@ -31,6 +31,19 @@ const formatCurrency = (value) => (
 );
 
 const ApartmentPage = () => {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || user.role !== 'Admin') {
+        return (
+            <div className="management-page">
+                <section className="management-hero">
+                    <div className="management-heading">
+                        <h2>Truy cập bị từ chối</h2>
+                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
+                    </div>
+                </section>
+            </div>
+        );
+    }
     const [apartments, setApartments] = useState([]);
     const [buildings, setBuildings] = useState([]);
     const [keyword, setKeyword] = useState("");
@@ -117,17 +130,29 @@ const ApartmentPage = () => {
 
     const handleSave = async (data) => {
         try {
+            // Map displayed status strings to backend-safe codes
+            const mapStatus = (val) => {
+                if (!val) return '';
+                const s = String(val).toLowerCase();
+                if (s.includes('trống') || s.includes('trong')) return 'Trong';
+                if (s.includes('thuê') || s.includes('thue')) return 'DaThue';
+                return val;
+            };
+
+            const payload = { ...data, TrangThai: mapStatus(data.TrangThai) };
+
             if (selectedApartment) {
-                await updateApartment(selectedApartment.MaCanHo, data);
+                await updateApartment(selectedApartment.MaCanHo, payload);
             } else {
-                await createApartment(data);
+                await createApartment(payload);
             }
 
             setShowModal(false);
             loadApartments();
         } catch (err) {
             console.error(err);
-            alert("Có lỗi xảy ra khi lưu căn hộ");
+              const msg = err?.response?.data?.message || err.message || "Có lỗi xảy ra khi lưu căn hộ";
+              alert(msg);
         }
     };
 

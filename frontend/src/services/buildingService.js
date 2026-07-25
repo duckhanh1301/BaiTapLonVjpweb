@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from './axiosConfig';
 
-const API_URL = "http://localhost:3000/api/buildings";
+const API_URL = "/buildings";
 
 // Lấy tất cả
 export const getAllBuildings = async () => {

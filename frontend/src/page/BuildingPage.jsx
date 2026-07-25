@@ -20,6 +20,19 @@ import BuildingForm from "../components/BuildingForm";
 import "../styles/Management.css";
 
 const BuildingPage = () => {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || user.role !== 'Admin') {
+        return (
+            <div className="management-page">
+                <section className="management-hero">
+                    <div className="management-heading">
+                        <h2>Truy cập bị từ chối</h2>
+                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
+                    </div>
+                </section>
+            </div>
+        );
+    }
     const [buildings, setBuildings] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [showModal, setShowModal] = useState(false);
