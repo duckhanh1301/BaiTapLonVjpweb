@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Camera, Image, Plus, Trash, X } from "@boxicons/react";
 
 const UploadImage = ({
     show,
@@ -12,22 +13,18 @@ const UploadImage = ({
     const [preview, setPreview] = useState(null);
 
     useEffect(() => {
-        if (!selectedFile) {
-            setPreview(null);
-            return;
-        }
-
-        const objectUrl = URL.createObjectURL(selectedFile);
-        setPreview(objectUrl);
-
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [selectedFile]);
+        return () => {
+            if (preview) URL.revokeObjectURL(preview);
+        };
+    }, [preview]);
 
     if (!show) return null;
 
-    const handleFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFile(e.target.files[0]);
+    const handleFileChange = (event) => {
+        if (event.target.files?.[0]) {
+            const file = event.target.files[0];
+            setSelectedFile(file);
+            setPreview(URL.createObjectURL(file));
         }
     };
 
@@ -43,97 +40,128 @@ const UploadImage = ({
 
         onUpload(formData);
         setSelectedFile(null);
+        setPreview(null);
+    };
+
+    const handleClose = () => {
+        setSelectedFile(null);
+        setPreview(null);
+        onClose();
     };
 
     return (
-        <div
-            className="modal fade show d-block"
-            style={{ backgroundColor: "rgba(0,0,0,.5)" }}
-        >
-            <div className="modal-dialog modal-xl">
+        <div className="modal management-modal fade show d-block" role="dialog" aria-modal="true">
+            <div className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">
-                            Quản lý ảnh căn hộ: {apartment.TenCanHo}
-                        </h5>
-                        <button className="btn-close" onClick={onClose} />
+                    <div className="management-modal-header">
+                        <span className="management-modal-icon is-image">
+                            <Camera aria-hidden="true" />
+                        </span>
+                        <div>
+                            <span className="management-modal-eyebrow">Thư viện căn hộ</span>
+                            <h5>{apartment.TenCanHo || "Căn hộ"}</h5>
+                        </div>
+                        <button
+                            className="management-modal-close"
+                            type="button"
+                            onClick={handleClose}
+                            aria-label="Đóng"
+                        >
+                            <X aria-hidden="true" />
+                        </button>
                     </div>
-                    <div className="modal-body">
-                        <div className="mb-3 row align-items-end">
-                            <div className="col-md-5">
-                                <label className="form-label">Chọn ảnh</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="form-control"
-                                    onChange={handleFileChange}
-                                />
+
+                    <div className="management-modal-body">
+                        <section className="image-upload-section">
+                            <div className="image-upload-copy">
+                                <span>
+                                    <Image aria-hidden="true" />
+                                </span>
+                                <div>
+                                    <strong>Thêm ảnh căn hộ</strong>
+                                    <p>Chọn ảnh rõ nét để cập nhật thư viện.</p>
+                                </div>
                             </div>
-                            <div className="col-md-3">
+
+                            <div className="image-upload-controls">
+                                <label className="image-file-input">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    <span>{selectedFile?.name || "Chọn ảnh từ thiết bị"}</span>
+                                </label>
                                 <button
-                                    className="btn btn-primary"
+                                    className="management-primary-button"
                                     type="button"
                                     onClick={handleUpload}
                                 >
-                                    Tải lên
+                                    <Plus aria-hidden="true" />
+                                    Tải ảnh lên
                                 </button>
                             </div>
-                            <div className="col-md-4">
-                                {preview && (
+
+                            {preview && (
+                                <div className="image-upload-preview">
+                                    <img src={preview} alt="Ảnh xem trước" />
                                     <div>
-                                        <small className="text-muted">Xem trước</small>
-                                        <img
-                                            src={preview}
-                                            alt="preview"
-                                            className="img-fluid rounded mt-2"
-                                            style={{ maxHeight: 140 }}
-                                        />
+                                        <span>Xem trước</span>
+                                        <strong>{selectedFile?.name}</strong>
                                     </div>
-                                )}
+                                </div>
+                            )}
+                        </section>
+
+                        <section className="image-gallery-section">
+                            <div className="image-gallery-heading">
+                                <div>
+                                    <h6>Ảnh hiện có</h6>
+                                    <p>{images.length} ảnh trong thư viện</p>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <h6>Ảnh hiện có</h6>
-                            <div className="row g-3">
-                                {images.length === 0 ? (
-                                    <div className="col-12">
-                                        <p className="text-muted">Chưa có ảnh nào.</p>
-                                    </div>
-                                ) : (
-                                    images.map((image) => (
-                                        <div className="col-md-3" key={image.MaAnh}>
-                                            <div className="card">
-                                                <img
-                                                    src={
-                                                        image.DuongDanAnh.startsWith("http")
-                                                            ? image.DuongDanAnh
-                                                            : `http://localhost:3000${image.DuongDanAnh}`
-                                                    }
-                                                    className="card-img-top"
-                                                    alt={`Ảnh ${image.MaAnh}`}
-                                                    style={{ height: 180, objectFit: "cover" }}
-                                                />
-                                                <div className="card-body p-2">
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-danger btn-sm w-100"
-                                                        onClick={() => onDelete(image.MaAnh)}
-                                                    >
-                                                        Xóa
-                                                    </button>
-                                                </div>
+
+                            {images.length === 0 ? (
+                                <div className="image-gallery-empty">
+                                    <Image aria-hidden="true" />
+                                    <strong>Chưa có ảnh nào</strong>
+                                    <p>Ảnh tải lên sẽ xuất hiện tại đây.</p>
+                                </div>
+                            ) : (
+                                <div className="image-gallery-grid">
+                                    {images.map((image) => (
+                                        <article className="image-gallery-card" key={image.MaAnh}>
+                                            <img
+                                                src={
+                                                    image.DuongDanAnh.startsWith("http")
+                                                        ? image.DuongDanAnh
+                                                        : `http://localhost:3000${image.DuongDanAnh}`
+                                                }
+                                                alt={`Ảnh căn hộ ${image.MaAnh}`}
+                                            />
+                                            <div>
+                                                <span>Ảnh #{image.MaAnh}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onDelete(image.MaAnh)}
+                                                    aria-label={`Xóa ảnh ${image.MaAnh}`}
+                                                >
+                                                    <Trash aria-hidden="true" />
+                                                    Xóa
+                                                </button>
                                             </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
                     </div>
-                    <div className="modal-footer">
+
+                    <div className="management-modal-footer">
                         <button
+                            className="management-secondary-button"
                             type="button"
-                            className="btn btn-secondary"
-                            onClick={onClose}
+                            onClick={handleClose}
                         >
                             Đóng
                         </button>

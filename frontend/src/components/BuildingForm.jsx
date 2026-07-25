@@ -1,47 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Buildings, Check, X } from "@boxicons/react";
 
 const BuildingForm = ({ show, onClose, onSubmit, building }) => {
+    const [formData, setFormData] = useState(() => ({
+        TenToaNha: building?.TenToaNha || "",
+        DiaChi: building?.DiaChi || "",
+        MoTa: building?.MoTa || ""
+    }));
 
-    const [formData, setFormData] = useState({
-        TenToaNha: "",
-        DiaChi: "",
-        MoTa: ""
-    });
-
-    useEffect(() => {
-
-        if (building) {
-
-            setFormData({
-                TenToaNha: building.TenToaNha || "",
-                DiaChi: building.DiaChi || "",
-                MoTa: building.MoTa || ""
-            });
-
-        } else {
-
-            setFormData({
-                TenToaNha: "",
-                DiaChi: "",
-                MoTa: ""
-            });
-
-        }
-
-    }, [building]);
-
-    const handleChange = (e) => {
-
+    const handleChange = (event) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [event.target.name]: event.target.value
         });
-
     };
 
-    const handleSubmit = (e) => {
-
-        e.preventDefault();
+    const handleSubmit = (event) => {
+        event.preventDefault();
 
         if (!formData.TenToaNha.trim()) {
             alert("Vui lòng nhập tên tòa nhà");
@@ -54,122 +29,89 @@ const BuildingForm = ({ show, onClose, onSubmit, building }) => {
         }
 
         onSubmit(formData);
-
     };
 
     if (!show) return null;
 
     return (
-
-        <div
-            className="modal fade show d-block"
-            style={{
-                backgroundColor: "rgba(0,0,0,.5)"
-            }}
-        >
-
-            <div className="modal-dialog">
-
+        <div className="modal management-modal fade show d-block" role="dialog" aria-modal="true">
+            <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
-
-                    <div className="modal-header">
-
-                        <h5 className="modal-title">
-
-                            {building ? "Cập nhật tòa nhà" : "Thêm tòa nhà"}
-
-                        </h5>
-
+                    <div className="management-modal-header">
+                        <span className="management-modal-icon">
+                            <Buildings aria-hidden="true" />
+                        </span>
+                        <div>
+                            <span className="management-modal-eyebrow">Thông tin tòa nhà</span>
+                            <h5>{building ? "Cập nhật tòa nhà" : "Thêm tòa nhà mới"}</h5>
+                        </div>
                         <button
-                            className="btn-close"
+                            className="management-modal-close"
+                            type="button"
                             onClick={onClose}
-                        />
-
+                            aria-label="Đóng"
+                        >
+                            <X aria-hidden="true" />
+                        </button>
                     </div>
 
                     <form onSubmit={handleSubmit}>
-
-                        <div className="modal-body">
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Tên tòa nhà
+                        <div className="management-modal-body">
+                            <div className="management-form-grid">
+                                <label className="management-field">
+                                    <span>Tên tòa nhà <i>*</i></span>
+                                    <input
+                                        type="text"
+                                        name="TenToaNha"
+                                        placeholder="Ví dụ: Landmark Riverside"
+                                        value={formData.TenToaNha}
+                                        onChange={handleChange}
+                                        autoFocus
+                                    />
                                 </label>
 
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="TenToaNha"
-                                    value={formData.TenToaNha}
-                                    onChange={handleChange}
-                                />
-
-                            </div>
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Địa chỉ
+                                <label className="management-field">
+                                    <span>Địa chỉ <i>*</i></span>
+                                    <input
+                                        type="text"
+                                        name="DiaChi"
+                                        placeholder="Nhập địa chỉ đầy đủ"
+                                        value={formData.DiaChi}
+                                        onChange={handleChange}
+                                    />
                                 </label>
 
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="DiaChi"
-                                    value={formData.DiaChi}
-                                    onChange={handleChange}
-                                />
-
-                            </div>
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Mô tả
+                                <label className="management-field">
+                                    <span>Mô tả</span>
+                                    <textarea
+                                        rows="4"
+                                        name="MoTa"
+                                        placeholder="Ghi chú thêm về tòa nhà..."
+                                        value={formData.MoTa}
+                                        onChange={handleChange}
+                                    />
                                 </label>
-
-                                <textarea
-                                    rows="4"
-                                    className="form-control"
-                                    name="MoTa"
-                                    value={formData.MoTa}
-                                    onChange={handleChange}
-                                />
-
                             </div>
-
                         </div>
 
-                        <div className="modal-footer">
-
+                        <div className="management-modal-footer">
                             <button
+                                className="management-secondary-button"
                                 type="button"
-                                className="btn btn-secondary"
                                 onClick={onClose}
                             >
                                 Hủy
                             </button>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                            >
-                                {building ? "Cập nhật" : "Thêm"}
+                            <button className="management-primary-button" type="submit">
+                                <Check aria-hidden="true" />
+                                {building ? "Lưu thay đổi" : "Thêm tòa nhà"}
                             </button>
-
                         </div>
-
                     </form>
-
                 </div>
-
             </div>
-
         </div>
-
     );
-
 };
 
 export default BuildingForm;
