@@ -7,6 +7,7 @@ import PrivateRoute from './components/PrivateRoute';
 import BuildingPage from "./page/BuildingPage";
 import ApartmentPage from "./page/ApartmentPage";
 import TenantPage from "./page/TenantPage";
+import ContractPage from "./page/ContractPage";
 import Layout from './components/Layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -28,7 +29,7 @@ function App() {
                     <Route path="/apartments" element={<ApartmentPage />} />
                     <Route path="/buildings" element={<BuildingPage />} />
                     <Route path="/tenants" element={<TenantPage />} />
-                    <Route path="/contracts" element={<SectionPage name="Hợp Đồng" />} />
+                    <Route path="/contracts" element={<ContractPage />} />
                     <Route path="/profile" element={<SectionPage name="Cá Nhân" />} />
                 </Route>
                 <Route 
