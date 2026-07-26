@@ -5,7 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 const router = express.Router();
 
-router.use(authMiddleware, authorizeRoles("Admin"));
+router.use(authMiddleware, authorizeRoles("ChuThue"));
 
 router.get("/expiring", contractController.getExpiringContracts);
 router.get("/options", contractController.getContractOptions);

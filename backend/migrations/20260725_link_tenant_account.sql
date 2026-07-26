@@ -1,5 +1,5 @@
 -- Liên kết một-một giữa hồ sơ người thuê và tài khoản đăng nhập.
--- Trong hệ thống hiện tại, tài khoản người thuê sử dụng role 'NhanVien'.
+-- Trong hệ thống hiện tại, tài khoản người thuê sử dụng role 'NguoiThue'.
 -- MaTaiKhoan tạm thời cho phép NULL để không gán sai dữ liệu cũ.
 
 ALTER TABLE NguoiThue
@@ -22,11 +22,11 @@ BEGIN
             SELECT 1
             FROM TaiKhoan
             WHERE id = NEW.MaTaiKhoan
-              AND role = 'NhanVien'
+              AND role = 'NguoiThue'
        )
     THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'MaTaiKhoan phai tham chieu tai khoan co role NhanVien';
+            SET MESSAGE_TEXT = 'MaTaiKhoan phai tham chieu tai khoan co role NguoiThue';
     END IF;
 END$$
 
@@ -39,11 +39,11 @@ BEGIN
             SELECT 1
             FROM TaiKhoan
             WHERE id = NEW.MaTaiKhoan
-              AND role = 'NhanVien'
+              AND role = 'NguoiThue'
        )
     THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'MaTaiKhoan phai tham chieu tai khoan co role NhanVien';
+            SET MESSAGE_TEXT = 'MaTaiKhoan phai tham chieu tai khoan co role NguoiThue';
     END IF;
 END$$
 
@@ -51,8 +51,8 @@ CREATE TRIGGER TRG_TaiKhoan_ProtectLinkedTenantRole
 BEFORE UPDATE ON TaiKhoan
 FOR EACH ROW
 BEGIN
-    IF OLD.role = 'NhanVien'
-       AND (NEW.role IS NULL OR NEW.role <> 'NhanVien')
+    IF OLD.role = 'NguoiThue'
+       AND (NEW.role IS NULL OR NEW.role <> 'NguoiThue')
        AND EXISTS (
             SELECT 1
             FROM NguoiThue

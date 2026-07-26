@@ -3,6 +3,10 @@ const router = express.Router();
 
 const upload = require("../middleware/upload");
 const imageController = require("../controllers/imageController");
+const authMiddleware = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
+
+router.use(authMiddleware, authorizeRoles("ChuThue"));
 
 // Upload ảnh
 router.post(

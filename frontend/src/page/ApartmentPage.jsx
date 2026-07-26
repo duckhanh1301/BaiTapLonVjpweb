@@ -34,7 +34,7 @@ const formatCurrency = (value) => (
 
 const ApartmentPage = () => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    const isAdmin = user?.role === 'Admin';
+    const isOwner = user?.role === 'ChuThue';
     const [apartments, setApartments] = useState([]);
     const [buildings, setBuildings] = useState([]);
     const [keyword, setKeyword] = useState("");
@@ -56,7 +56,7 @@ const ApartmentPage = () => {
     };
 
     useEffect(() => {
-        if (!isAdmin) return undefined;
+        if (!isOwner) return undefined;
 
         const fetchInitialData = async () => {
             try {
@@ -74,7 +74,7 @@ const ApartmentPage = () => {
 
         fetchInitialData();
         return undefined;
-    }, [isAdmin]);
+    }, [isOwner]);
 
     const loadImages = async (maCanHo) => {
         try {
@@ -203,13 +203,13 @@ const ApartmentPage = () => {
         return "is-neutral";
     };
 
-    if (!isAdmin) {
+    if (!isOwner) {
         return (
             <div className="management-page">
                 <section className="management-hero">
                     <div className="management-heading">
                         <h2>Truy cập bị từ chối</h2>
-                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
+                        <p>Chỉ chủ thuê mới được xem trang này.</p>
                     </div>
                 </section>
             </div>

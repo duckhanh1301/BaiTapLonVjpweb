@@ -14,8 +14,13 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
-            await login(email, password);
-            navigate('/dashboard');
+            const data = await login(email, password);
+            navigate(
+                data.user?.role === 'ChuThue'
+                    ? '/dashboard'
+                    : '/profile',
+                { replace: true },
+            );
         } catch (err) {
             setError(err.message || 'Đăng nhập thất bại');
         } finally {

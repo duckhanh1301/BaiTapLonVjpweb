@@ -1,9 +1,7 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:3000/api/images";
+import axios from "./axiosConfig";
 
 export const uploadImage = async (formData) => {
-    const res = await axios.post(`${API_URL}/upload`, formData, {
+    const res = await axios.post("/images/upload", formData, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
@@ -12,11 +10,11 @@ export const uploadImage = async (formData) => {
 };
 
 export const getImages = async (maCanHo) => {
-    const res = await axios.get(`${API_URL}/${maCanHo}`);
+    const res = await axios.get(`/images/${maCanHo}`);
     return res.data;
 };
 
 export const deleteImage = async (maAnh) => {
-    const res = await axios.delete(`${API_URL}/${maAnh}`);
+    const res = await axios.delete(`/images/${maAnh}`);
     return res.data;
 };

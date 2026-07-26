@@ -1,6 +1,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './page/Login';
+import Login from './page/login';
 import Dashboard from './page/Dashboard';
 import SectionPage from './page/SectionPage';
 import PrivateRoute from './components/PrivateRoute';
@@ -9,10 +9,21 @@ import ApartmentPage from "./page/ApartmentPage";
 import TenantPage from "./page/TenantPage";
 import ContractPage from "./page/ContractPage";
 import Layout from './components/Layout';
+import { getCurrentUser } from './services/authService';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+const OwnerRoute = ({ children }) => (
+    <PrivateRoute allowedRoles={['ChuThue']}>
+        {children}
+    </PrivateRoute>
+);
 
 function App() {
     const token = localStorage.getItem('token');
+    const user = getCurrentUser();
+    const homePath = user?.role === 'ChuThue'
+        ? '/dashboard'
+        : '/profile';
 
     return (
         <BrowserRouter>
@@ -25,17 +36,34 @@ function App() {
                         </PrivateRoute>
                     }
                 >
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/apartments" element={<ApartmentPage />} />
-                    <Route path="/buildings" element={<BuildingPage />} />
-                    <Route path="/tenants" element={<TenantPage />} />
-                    <Route path="/contracts" element={<ContractPage />} />
+                    <Route
+                        path="/dashboard"
+                        element={<OwnerRoute><Dashboard /></OwnerRoute>}
+                    />
+                    <Route
+                        path="/apartments"
+                        element={<OwnerRoute><ApartmentPage /></OwnerRoute>}
+                    />
+                    <Route
+                        path="/buildings"
+                        element={<OwnerRoute><BuildingPage /></OwnerRoute>}
+                    />
+                    <Route
+                        path="/tenants"
+                        element={<OwnerRoute><TenantPage /></OwnerRoute>}
+                    />
+                    <Route
+                        path="/contracts"
+                        element={<OwnerRoute><ContractPage /></OwnerRoute>}
+                    />
                     <Route path="/profile" element={<SectionPage name="Cá Nhân" />} />
                 </Route>
                 <Route 
                     path="/" 
                     element={
-                        token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+                        token
+                            ? <Navigate to={homePath} replace />
+                            : <Navigate to="/login" replace />
                     } 
                 />
                 {/* Route 404 - trang không tìm thấy */}

@@ -43,7 +43,7 @@ const formatCurrency = (value) => (
 
 const Dashboard = () => {
     const user = getCurrentUser();
-    const isAdmin = user?.role === 'Admin';
+    const isOwner = user?.role === 'ChuThue';
 
     const [summary, setSummary] = useState({
         totalBuildings: 0,
@@ -59,7 +59,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!isAdmin) {
+        if (!isOwner) {
             return;
         }
 
@@ -83,7 +83,7 @@ const Dashboard = () => {
         };
 
         fetchAllData();
-    }, [isAdmin]);
+    }, [isOwner]);
 
     const monthChartData = useMemo(() => ({
         labels: revenueByMonth.length
@@ -237,13 +237,13 @@ const Dashboard = () => {
         },
     ];
 
-    if (!isAdmin) {
+    if (!isOwner) {
         return (
             <div className="dashboard-access-denied" role="alert">
                 <div className="dashboard-access-icon">!</div>
                 <span>Quyền truy cập</span>
                 <h2>Không thể mở Dashboard</h2>
-                <p>Trang tổng quan chỉ dành cho tài khoản có quyền Admin.</p>
+                <p>Trang tổng quan chỉ dành cho chủ thuê.</p>
             </div>
         );
     }

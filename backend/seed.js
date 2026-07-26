@@ -8,13 +8,13 @@ async function seed() {
         console.log('🗑️ Đã xóa dữ liệu cũ');
 
         // Hash mật khẩu
-        const hashedAdmin = await bcrypt.hash('123456', 10);
-        const hashedNhanVien = await bcrypt.hash('123456', 10);
+        const hashedChuThue = await bcrypt.hash('123456', 10);
+        const hashedNguoiThue = await bcrypt.hash('123456', 10);
 
         // Chèn dữ liệu mới
         await db.query(
             'INSERT INTO TaiKhoan (email, password, role) VALUES (?, ?, ?), (?, ?, ?)',
-            ['admin@gmail.com', hashedAdmin, 'Admin', 'nhanvien@gmail.com', hashedNhanVien, 'NhanVien']
+            ['admin@gmail.com', hashedChuThue, 'ChuThue', 'nhanvien@gmail.com', hashedNguoiThue, 'NguoiThue']
         );
 
         console.log('✅ Seed dữ liệu thành công!');

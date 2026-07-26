@@ -8,19 +8,19 @@ const router = express.Router();
 router.get(
     "/",
     authMiddleware,
-    authorizeRoles("Admin", "NhanVien"),
+    authorizeRoles("ChuThue", "NguoiThue"),
     tenantController.getAllTenants
 );
 router.put(
     "/:id",
     authMiddleware,
-    authorizeRoles("Admin", "NhanVien"),
+    authorizeRoles("ChuThue", "NguoiThue"),
     tenantController.updateTenant
 );
 router.delete(
     "/:id",
     authMiddleware,
-    authorizeRoles("Admin"),
+    authorizeRoles("ChuThue"),
     tenantController.deleteTenant
 );
 

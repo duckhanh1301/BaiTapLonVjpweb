@@ -6,12 +6,14 @@ const apartmentController = require("../controllers/apartmentController");
 const authMiddleware = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
-router.get("/", authMiddleware, authorizeRoles("Admin"), apartmentController.getAllApartments);
+router.use(authMiddleware, authorizeRoles("ChuThue"));
+
+router.get("/", apartmentController.getAllApartments);
 
 // Search phải đặt trước :id
-router.get("/search", authMiddleware, authorizeRoles("Admin"), apartmentController.searchApartments);
+router.get("/search", apartmentController.searchApartments);
 
-router.get("/:id", authMiddleware, authorizeRoles("Admin"), apartmentController.getApartmentById);
+router.get("/:id", apartmentController.getApartmentById);
 
 router.post("/", apartmentController.createApartment);
 

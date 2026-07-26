@@ -64,7 +64,7 @@ const getErrorMessage = (error, fallback) => (
 
 const ContractPage = () => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
-    const isAdmin = user?.role === "Admin";
+    const isOwner = user?.role === "ChuThue";
     const [contracts, setContracts] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -82,7 +82,7 @@ const ContractPage = () => {
     });
 
     const loadContracts = useCallback(async () => {
-        if (!isAdmin) return;
+        if (!isOwner) return;
 
         setIsLoading(true);
         setPageError("");
@@ -111,7 +111,7 @@ const ContractPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [isAdmin]);
+    }, [isOwner]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(loadContracts, 0);
@@ -226,13 +226,13 @@ const ContractPage = () => {
         }
     };
 
-    if (!isAdmin) {
+    if (!isOwner) {
         return (
             <div className="contract-page">
                 <div className="contract-access-denied">
                     <FaExclamationCircle aria-hidden="true" />
                     <h2>Truy cập bị từ chối</h2>
-                    <p>Chỉ tài khoản Admin mới có thể xem hợp đồng cho thuê.</p>
+                    <p>Chỉ chủ thuê mới có thể xem hợp đồng cho thuê.</p>
                 </div>
             </div>
         );

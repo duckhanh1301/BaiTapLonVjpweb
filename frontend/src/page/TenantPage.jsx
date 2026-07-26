@@ -38,7 +38,7 @@ const getErrorMessage = (error, fallback) => (
 
 const TenantPage = () => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
-    const isAdmin = user?.role === "Admin";
+    const isOwner = user?.role === "ChuThue";
     const [tenants, setTenants] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -51,7 +51,7 @@ const TenantPage = () => {
     const [formError, setFormError] = useState("");
 
     const loadTenants = useCallback(async () => {
-        if (!isAdmin) return;
+        if (!isOwner) return;
 
         setIsLoading(true);
         setPageError("");
@@ -66,7 +66,7 @@ const TenantPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [isAdmin]);
+    }, [isOwner]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(loadTenants, 0);
@@ -177,13 +177,13 @@ const TenantPage = () => {
         }
     };
 
-    if (!isAdmin) {
+    if (!isOwner) {
         return (
             <div className="tenant-page">
                 <div className="tenant-access-denied">
                     <FaExclamationCircle aria-hidden="true" />
                     <h2>Truy cập bị từ chối</h2>
-                    <p>Chỉ tài khoản Admin mới có thể quản lý người thuê.</p>
+                    <p>Chỉ chủ thuê mới có thể quản lý người thuê.</p>
                 </div>
             </div>
         );

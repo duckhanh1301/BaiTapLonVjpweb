@@ -38,7 +38,7 @@ const validateTenantAccount = async (
     const accountFound = await tenantModel.tenantAccountExists(accountId);
 
     if (!accountFound) {
-        return "Tài khoản không tồn tại hoặc không có role NhanVien";
+        return "Tài khoản không tồn tại hoặc không có role NguoiThue";
     }
 
     const alreadyLinked = await tenantModel.accountAlreadyLinked(
@@ -53,7 +53,7 @@ const validateTenantAccount = async (
 
 const getAllTenants = async (req, res) => {
     try {
-        const accountId = req.user.role === "NhanVien"
+        const accountId = req.user.role === "NguoiThue"
             ? Number(req.user.id)
             : null;
         const tenants = await tenantModel.getAllTenants(accountId);
@@ -134,7 +134,7 @@ const updateTenant = async (req, res) => {
         }
 
         if (
-            req.user.role === "NhanVien"
+            req.user.role === "NguoiThue"
             && Number(existingTenant.MaTaiKhoan) !== Number(req.user.id)
         ) {
             return res.status(403).json({
@@ -142,7 +142,7 @@ const updateTenant = async (req, res) => {
             });
         }
 
-        const accountId = req.user.role === "NhanVien"
+        const accountId = req.user.role === "NguoiThue"
             ? Number(req.user.id)
             : Number(req.body.MaTaiKhoan ?? existingTenant.MaTaiKhoan);
         const tenant = normalizeTenant(req.body, accountId);

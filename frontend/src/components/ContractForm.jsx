@@ -210,7 +210,7 @@ const ContractForm = ({
                                                 required
                                             >
                                                 <option value="">
-                                                    Chọn tài khoản NhanVien chưa sử dụng
+                                                    Chọn tài khoản người thuê chưa sử dụng
                                                 </option>
                                                 {options.accounts.map((account) => (
                                                     <option key={account.id} value={account.id}>
@@ -220,7 +220,7 @@ const ContractForm = ({
                                             </select>
                                             {options.accounts.length === 0 && (
                                                 <small className="contract-option-warning">
-                                                    Không có tài khoản NhanVien khả dụng.
+                                                    Không có tài khoản người thuê khả dụng.
                                                 </small>
                                             )}
                                         </label>

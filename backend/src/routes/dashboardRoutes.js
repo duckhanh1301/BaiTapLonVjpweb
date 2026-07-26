@@ -11,10 +11,10 @@ const authorizeRoles = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
-// Tất cả API dashboard chỉ dành cho Admin
-router.get('/summary', authMiddleware, authorizeRoles('Admin'), getSummary);
-router.get('/revenue-by-month', authMiddleware, authorizeRoles('Admin'), getRevenueByMonth);
-router.get('/apartment-status', authMiddleware, authorizeRoles('Admin'), getApartmentStatus);
-router.get('/revenue-by-building', authMiddleware, authorizeRoles('Admin'), getRevenueByBuilding);
+// Tất cả API dashboard chỉ dành cho chủ thuê
+router.get('/summary', authMiddleware, authorizeRoles('ChuThue'), getSummary);
+router.get('/revenue-by-month', authMiddleware, authorizeRoles('ChuThue'), getRevenueByMonth);
+router.get('/apartment-status', authMiddleware, authorizeRoles('ChuThue'), getApartmentStatus);
+router.get('/revenue-by-building', authMiddleware, authorizeRoles('ChuThue'), getRevenueByBuilding);
 
 module.exports = router;

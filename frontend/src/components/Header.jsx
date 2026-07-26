@@ -3,8 +3,12 @@ import { NavLink } from 'react-router-dom'
 import { navigationItems } from './navigation'
 import '../styles/Header.css'
 
+const roleLabels = {
+    ChuThue: 'Chủ thuê',
+    NguoiThue: 'Người thuê',
+};
+
 function Header({ user, handleLogout }) {
-    // Lọc menu theo role (nếu cần)
     const filteredItems = navigationItems.filter(item => {
         if (!item.roles) return true;
         return item.roles.includes(user?.role);
@@ -44,10 +48,10 @@ function Header({ user, handleLogout }) {
 
                 <div className="sidebar-account-status">
                     <span
-                        className={`sidebar-role${user?.role === 'Admin' ? ' is-admin' : ''}`}
+                        className={`sidebar-role${user?.role === 'ChuThue' ? ' is-owner' : ''}`}
                     >
                         <i aria-hidden="true" />
-                        {user?.role || 'Thành viên'}
+                        {roleLabels[user?.role] || 'Thành viên'}
                     </span>
                     <small>Đang hoạt động</small>
                 </div>

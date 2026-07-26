@@ -63,7 +63,7 @@ const tenantAccountExists = async (id) => {
         `SELECT 1
          FROM TaiKhoan
          WHERE id = ?
-           AND role = 'NhanVien'
+           AND role = 'NguoiThue'
          LIMIT 1`,
         [id]
     );
@@ -100,7 +100,7 @@ const getTenantAccounts = async () => {
          FROM TaiKhoan tk
          LEFT JOIN NguoiThue nt
             ON nt.MaTaiKhoan = tk.id
-         WHERE tk.role = 'NhanVien'
+         WHERE tk.role = 'NguoiThue'
          ORDER BY tk.email ASC`
     );
 

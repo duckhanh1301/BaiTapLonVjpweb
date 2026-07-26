@@ -42,10 +42,40 @@
 import { FaHome, FaBuilding, FaUser, FaFileContract, FaUserCog } from 'react-icons/fa';
 
 export const navigationItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: FaHome },
-    { path: '/apartments', label: 'Căn Hộ', icon: FaBuilding },
-    { path: '/buildings', label: 'Toà Nhà', icon: FaBuilding },
-    { path: '/tenants', label: 'Người Thuê', icon: FaUser },
-    { path: '/contracts', label: 'Hợp Đồng', icon: FaFileContract },
-    { path: '/profile', label: 'Cá Nhân', icon: FaUserCog },
+    {
+        path: '/dashboard',
+        label: 'Dashboard',
+        icon: FaHome,
+        roles: ['ChuThue'],
+    },
+    {
+        path: '/apartments',
+        label: 'Căn Hộ',
+        icon: FaBuilding,
+        roles: ['ChuThue'],
+    },
+    {
+        path: '/buildings',
+        label: 'Toà Nhà',
+        icon: FaBuilding,
+        roles: ['ChuThue'],
+    },
+    {
+        path: '/tenants',
+        label: 'Người Thuê',
+        icon: FaUser,
+        roles: ['ChuThue'],
+    },
+    {
+        path: '/contracts',
+        label: 'Hợp Đồng',
+        icon: FaFileContract,
+        roles: ['ChuThue'],
+    },
+    {
+        path: '/profile',
+        label: 'Cá Nhân',
+        icon: FaUserCog,
+        roles: ['ChuThue', 'NguoiThue'],
+    },
 ];

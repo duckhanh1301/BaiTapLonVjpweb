@@ -150,12 +150,12 @@
     box-shadow: 0 0 0 3px rgba(29, 182, 129, 0.11);
 }
 
-.sidebar-role.is-admin {
+.sidebar-role.is-owner {
     background: #eef2ff;
     color: #4f46e5;
 }
 
-.sidebar-role.is-admin i {
+.sidebar-role.is-owner i {
     background: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.11);
 }

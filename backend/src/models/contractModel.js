@@ -72,7 +72,7 @@ const getContractOptions = async () => {
              FROM TaiKhoan tk
              LEFT JOIN NguoiThue nt
                 ON nt.MaTaiKhoan = tk.id
-             WHERE tk.role = 'NhanVien'
+             WHERE tk.role = 'NguoiThue'
                AND nt.MaNguoiThue IS NULL
              ORDER BY tk.email ASC`
         ),
@@ -191,7 +191,7 @@ const createContractWithTenant = async (tenant, contract) => {
             `SELECT id
              FROM TaiKhoan
              WHERE id = ?
-               AND role = 'NhanVien'
+               AND role = 'NguoiThue'
              LIMIT 1
              FOR UPDATE`,
             [tenant.MaTaiKhoan]

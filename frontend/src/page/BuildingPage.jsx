@@ -21,18 +21,7 @@ import "../styles/Management.css";
 
 const BuildingPage = () => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (!user || user.role !== 'Admin') {
-        return (
-            <div className="management-page">
-                <section className="management-hero">
-                    <div className="management-heading">
-                        <h2>Truy cập bị từ chối</h2>
-                        <p>Chỉ người dùng có quyền Admin mới được xem trang này.</p>
-                    </div>
-                </section>
-            </div>
-        );
-    }
+    const isOwner = user?.role === 'ChuThue';
     const [buildings, setBuildings] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -49,6 +38,8 @@ const BuildingPage = () => {
     };
 
     useEffect(() => {
+        if (!isOwner) return undefined;
+
         const fetchBuildings = async () => {
             try {
                 const data = await getAllBuildings();
@@ -60,7 +51,8 @@ const BuildingPage = () => {
         };
 
         fetchBuildings();
-    }, []);
+        return undefined;
+    }, [isOwner]);
 
     const handleSearch = async () => {
         try {
@@ -114,6 +106,19 @@ const BuildingPage = () => {
             alert("Có lỗi xảy ra khi lưu tòa nhà");
         }
     };
+
+    if (!isOwner) {
+        return (
+            <div className="management-page">
+                <section className="management-hero">
+                    <div className="management-heading">
+                        <h2>Truy cập bị từ chối</h2>
+                        <p>Chỉ chủ thuê mới được xem trang này.</p>
+                    </div>
+                </section>
+            </div>
+        );
+    }
 
     return (
         <div className="management-page">
