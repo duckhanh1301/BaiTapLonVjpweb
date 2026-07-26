@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {
+    FaArrowRight,
+    FaBath,
+    FaBed,
+    FaBuilding,
+    FaHome,
+    FaLayerGroup,
+    FaRulerCombined,
+    FaSearch,
+    FaSlidersH,
+    FaTimes,
+    FaUndo,
+} from 'react-icons/fa';
 import { getAllApartments, searchApartments } from '../services/apartmentService';
 import '../styles/UserApartmentPage.css';
 
@@ -11,289 +23,410 @@ const UserApartmentPage = () => {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [selectedApartment, setSelectedApartment] = useState(null);
-    const [showDetail, setShowDetail] = useState(false);
-
-    useEffect(() => {
-        fetchApartments();
-    }, []);
 
     const fetchApartments = async () => {
         try {
             setLoading(true);
+            setError('');
             const data = await getAllApartments();
-            setApartments(data);
-            setFilteredApartments(data);
-        } catch (error) {
-            console.error('Lỗi khi lấy danh sách căn hộ:', error);
+            const apartmentList = Array.isArray(data) ? data : [];
+            setApartments(apartmentList);
+            setFilteredApartments(apartmentList);
+        } catch (fetchError) {
+            console.error('Lỗi khi lấy danh sách căn hộ:', fetchError);
+            setError('Không thể tải danh sách căn hộ. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        try {
-            if (searchTerm.trim()) {
-                const data = await searchApartments(searchTerm);
-                applyFilters(data);
-            } else {
-                applyFilters(apartments);
-            }
-        } catch (error) {
-            console.error('Lỗi tìm kiếm:', error);
-        }
-    };
+    useEffect(() => {
+        let isCancelled = false;
+
+        getAllApartments()
+            .then((data) => {
+                if (isCancelled) return;
+                const apartmentList = Array.isArray(data) ? data : [];
+                setApartments(apartmentList);
+                setFilteredApartments(apartmentList);
+            })
+            .catch((fetchError) => {
+                if (isCancelled) return;
+                console.error('Lỗi khi lấy danh sách căn hộ:', fetchError);
+                setError('Không thể tải danh sách căn hộ. Vui lòng thử lại.');
+            })
+            .finally(() => {
+                if (!isCancelled) setLoading(false);
+            });
+
+        return () => {
+            isCancelled = true;
+        };
+    }, []);
 
     const applyFilters = (data) => {
-        let filtered = data;
+        let filtered = Array.isArray(data) ? data : [];
 
         if (filterStatus) {
-            filtered = filtered.filter(apt => apt.TrangThai === filterStatus);
+            filtered = filtered.filter((apartment) => (
+                apartment.TrangThai === filterStatus
+            ));
         }
 
         if (minPrice) {
-            filtered = filtered.filter(apt => apt.GiaThue >= Number(minPrice));
+            filtered = filtered.filter((apartment) => (
+                Number(apartment.GiaThue) >= Number(minPrice)
+            ));
         }
 
         if (maxPrice) {
-            filtered = filtered.filter(apt => apt.GiaThue <= Number(maxPrice));
+            filtered = filtered.filter((apartment) => (
+                Number(apartment.GiaThue) <= Number(maxPrice)
+            ));
         }
 
         setFilteredApartments(filtered);
     };
 
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        if (name === 'status') {
-            setFilterStatus(value);
-        } else if (name === 'minPrice') {
-            setMinPrice(value);
-        } else if (name === 'maxPrice') {
-            setMaxPrice(value);
+    const handleSearch = async (event) => {
+        event.preventDefault();
+
+        try {
+            setError('');
+            const data = searchTerm.trim()
+                ? await searchApartments(searchTerm.trim())
+                : apartments;
+            applyFilters(data);
+        } catch (searchError) {
+            console.error('Lỗi tìm kiếm:', searchError);
+            setError('Không thể tìm kiếm căn hộ. Vui lòng thử lại.');
         }
     };
 
-    const handleViewDetail = (apartment) => {
-        setSelectedApartment(apartment);
-        setShowDetail(true);
+    const handleFilterChange = (event) => {
+        const { name, value } = event.target;
+
+        if (name === 'status') setFilterStatus(value);
+        if (name === 'minPrice') setMinPrice(value);
+        if (name === 'maxPrice') setMaxPrice(value);
     };
 
-    const formatCurrency = (value) => {
-        return Number(value || 0).toLocaleString('vi-VN') + 'đ';
+    const resetFilters = () => {
+        setFilterStatus('');
+        setMinPrice('');
+        setMaxPrice('');
+        setSearchTerm('');
+        setFilteredApartments(apartments);
+        setError('');
     };
+
+    const formatCurrency = (value) => (
+        `${Number(value || 0).toLocaleString('vi-VN')} ₫`
+    );
 
     const getImageUrl = (imagePath) => {
-        if (!imagePath) {
-            return 'https://via.placeholder.com/300x200?text=No+Image';
-        }
-        // Nếu imagePath bắt đầu với /, nó là đường dẫn từ backend
-        if (imagePath.startsWith('/')) {
-            return `http://localhost:3000${imagePath}`;
-        }
+        if (!imagePath) return '';
+        if (imagePath.startsWith('/')) return `http://localhost:3000${imagePath}`;
         return imagePath;
     };
 
-    const getStatusBadge = (status) => {
-        const statusMap = {
-            'Trống': 'badge bg-success',
-            'Đã thuê': 'badge bg-danger',
-            'Đang sửa chữa': 'badge bg-warning'
-        };
-        return statusMap[status] || 'badge bg-secondary';
+    const getStatusClass = (status) => {
+        if (status === 'Trống') return 'is-available';
+        if (status === 'Đã thuê') return 'is-rented';
+        if (status === 'Đang sửa chữa') return 'is-maintenance';
+        return 'is-unknown';
     };
 
     return (
         <div className="user-apartment-page">
-            <div className="container py-4">
-                <h1 className="mb-4">Danh Sách Căn Hộ</h1>
-
-                {/* Search and Filter Section */}
-                <div className="search-filter-section mb-4">
-                    <form onSubmit={handleSearch} className="mb-3">
-                        <div className="row">
-                            <div className="col-md-6 mb-2">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Tìm theo tên căn hộ (VD: A101, Tòa A)"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
-                            <div className="col-md-6 mb-2">
-                                <button type="submit" className="btn btn-primary w-100">
-                                    <i className="bi bi-search"></i> Tìm kiếm
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    {/* Filters */}
-                    <div className="row">
-                        <div className="col-md-3 mb-2">
-                            <select
-                                name="status"
-                                className="form-select"
-                                value={filterStatus}
-                                onChange={handleFilterChange}
-                            >
-                                <option value="">-- Tất cả trạng thái --</option>
-                                <option value="Trống">Trống</option>
-                                <option value="Đã thuê">Đã thuê</option>
-                                <option value="Đang sửa chữa">Đang sửa chữa</option>
-                            </select>
-                        </div>
-                        <div className="col-md-3 mb-2">
-                            <input
-                                type="number"
-                                name="minPrice"
-                                className="form-control"
-                                placeholder="Giá từ"
-                                value={minPrice}
-                                onChange={handleFilterChange}
-                            />
-                        </div>
-                        <div className="col-md-3 mb-2">
-                            <input
-                                type="number"
-                                name="maxPrice"
-                                className="form-control"
-                                placeholder="Giá đến"
-                                value={maxPrice}
-                                onChange={handleFilterChange}
-                            />
-                        </div>
-                        <div className="col-md-3 mb-2">
-                            <button
-                                onClick={() => {
-                                    setFilterStatus('');
-                                    setMinPrice('');
-                                    setMaxPrice('');
-                                    setSearchTerm('');
-                                    setFilteredApartments(apartments);
-                                }}
-                                className="btn btn-secondary w-100"
-                            >
-                                Xóa bộ lọc
-                            </button>
-                        </div>
+            <form className="ua-filter-panel" onSubmit={handleSearch}>
+                <div className="ua-filter-heading">
+                    <div className="ua-filter-icon">
+                        <FaSlidersH aria-hidden="true" />
+                    </div>
+                    <div>
+                        <h2>Tìm căn hộ</h2>
+                        <p>Nhập nhu cầu của bạn để thu hẹp kết quả.</p>
                     </div>
                 </div>
 
-                {/* Apartments List */}
-                {loading ? (
-                    <div className="text-center">
-                        <div className="spinner-border" role="status">
-                            <span className="visually-hidden">Đang tải...</span>
+                <div className="ua-search-row">
+                    <label className="ua-field ua-search-field">
+                        <span>Từ khóa</span>
+                        <div className="ua-input-shell">
+                            <FaSearch aria-hidden="true" />
+                            <input
+                                type="search"
+                                placeholder="Tên căn hộ hoặc tòa nhà..."
+                                value={searchTerm}
+                                onChange={(event) => setSearchTerm(event.target.value)}
+                            />
                         </div>
+                    </label>
+
+                    <label className="ua-field">
+                        <span>Trạng thái</span>
+                        <select
+                            name="status"
+                            value={filterStatus}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Trống">Đang trống</option>
+                            <option value="Đã thuê">Đã thuê</option>
+                            <option value="Đang sửa chữa">Đang sửa chữa</option>
+                        </select>
+                    </label>
+
+                    <label className="ua-field">
+                        <span>Giá từ</span>
+                        <div className="ua-price-input">
+                            <input
+                                type="number"
+                                name="minPrice"
+                                min="0"
+                                placeholder="0"
+                                value={minPrice}
+                                onChange={handleFilterChange}
+                            />
+                            <small>₫</small>
+                        </div>
+                    </label>
+
+                    <label className="ua-field">
+                        <span>Giá đến</span>
+                        <div className="ua-price-input">
+                            <input
+                                type="number"
+                                name="maxPrice"
+                                min="0"
+                                placeholder="Không giới hạn"
+                                value={maxPrice}
+                                onChange={handleFilterChange}
+                            />
+                            <small>₫</small>
+                        </div>
+                    </label>
+                </div>
+
+                <div className="ua-filter-actions">
+                    <button type="button" className="ua-reset-button" onClick={resetFilters}>
+                        <FaUndo aria-hidden="true" />
+                        Xóa bộ lọc
+                    </button>
+                    <button type="submit" className="ua-search-button">
+                        <FaSearch aria-hidden="true" />
+                        Tìm kiếm
+                    </button>
+                </div>
+            </form>
+
+            <section className="ua-results" aria-live="polite">
+                <header className="ua-results-header">
+                    <div>
+                        <span>Danh sách căn hộ</span>
+                        <h2>Lựa chọn nổi bật</h2>
                     </div>
-                ) : filteredApartments.length === 0 ? (
-                    <div className="alert alert-info">
-                        Không tìm thấy căn hộ nào phù hợp
+                    {!loading && !error && (
+                        <p>
+                            Hiển thị <strong>{filteredApartments.length}</strong> kết quả
+                        </p>
+                    )}
+                </header>
+
+                {error ? (
+                    <div className="ua-state-card is-error" role="alert">
+                        <div className="ua-state-icon"><FaHome aria-hidden="true" /></div>
+                        <h3>Chưa thể tải dữ liệu</h3>
+                        <p>{error}</p>
+                        <button type="button" onClick={fetchApartments}>Thử lại</button>
                     </div>
-                ) : (
-                    <div className="row">
-                        {filteredApartments.map((apartment) => (
-                            <div key={apartment.MaCanHo} className="col-md-6 col-lg-4 mb-4">
-                                <div className="card apartment-card h-100">
-                                    <div className="apartment-image-container">
-                                        <img
-                                            src={getImageUrl(apartment.HinhAnh)}
-                                            className="card-img-top"
-                                            alt={apartment.TenCanHo}
-                                        />
-                                        <span className={`${getStatusBadge(apartment.TrangThai)} position-absolute top-0 end-0 m-2`}>
-                                            {apartment.TrangThai}
-                                        </span>
-                                    </div>
-                                    <div className="card-body">
-                                        <h5 className="card-title">{apartment.TenCanHo}</h5>
-                                        <div className="apartment-info">
-                                            <p className="mb-2">
-                                                <strong>Diện tích:</strong> {apartment.DienTich} m²
-                                            </p>
-                                            <p className="mb-2">
-                                                <strong>Giá thuê:</strong>
-                                                <span className="text-danger ms-2">{formatCurrency(apartment.GiaThue)}</span>
-                                            </p>
-                                            <p className="mb-2">
-                                                <strong>Tầng:</strong> {apartment.Tang}
-                                            </p>
-                                            <p className="mb-2">
-                                                <strong>Phòng ngủ:</strong> {apartment.SoPhongNgu}
-                                            </p>
-                                            <p className="mb-2">
-                                                <strong>Phòng tắm:</strong> {apartment.SoPhongTam}
-                                            </p>
-                                            {apartment.MoTa && (
-                                                <p className="mb-2">
-                                                    <strong>Mô tả:</strong>
-                                                    <br />
-                                                    <small>{apartment.MoTa}</small>
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="card-footer bg-transparent">
-                                        <button
-                                            onClick={() => handleViewDetail(apartment)}
-                                            className="btn btn-primary w-100"
-                                        >
-                                            Xem chi tiết
-                                        </button>
-                                    </div>
+                ) : loading ? (
+                    <div className="ua-apartment-grid" aria-label="Đang tải căn hộ">
+                        {[1, 2, 3].map((item) => (
+                            <div className="ua-skeleton-card" key={item} aria-hidden="true">
+                                <span className="ua-skeleton-image" />
+                                <div>
+                                    <span />
+                                    <span />
+                                    <span />
                                 </div>
                             </div>
                         ))}
                     </div>
-                )}
-            </div>
+                ) : filteredApartments.length === 0 ? (
+                    <div className="ua-state-card">
+                        <div className="ua-state-icon"><FaSearch aria-hidden="true" /></div>
+                        <h3>Không tìm thấy căn hộ phù hợp</h3>
+                        <p>Hãy thử thay đổi từ khóa, trạng thái hoặc khoảng giá.</p>
+                        <button type="button" onClick={resetFilters}>Xóa bộ lọc</button>
+                    </div>
+                ) : (
+                    <div className="ua-apartment-grid">
+                        {filteredApartments.map((apartment) => (
+                            <article className="ua-apartment-card" key={apartment.MaCanHo}>
+                                <div className="ua-card-media">
+                                    <div className="ua-image-placeholder">
+                                        <FaHome aria-hidden="true" />
+                                        <span>Hình ảnh đang cập nhật</span>
+                                    </div>
+                                    {apartment.HinhAnh && (
+                                        <img
+                                            src={getImageUrl(apartment.HinhAnh)}
+                                            alt={apartment.TenCanHo}
+                                            onError={(event) => {
+                                                event.currentTarget.style.display = 'none';
+                                            }}
+                                        />
+                                    )}
+                                    <span className={`ua-status ${getStatusClass(apartment.TrangThai)}`}>
+                                        <i aria-hidden="true" />
+                                        {apartment.TrangThai || 'Chưa cập nhật'}
+                                    </span>
+                                </div>
 
-            {/* Detail Modal */}
-            {showDetail && selectedApartment && (
-                <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="modal-dialog modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Chi Tiết Căn Hộ</h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => setShowDetail(false)}
-                                ></button>
+                                <div className="ua-card-body">
+                                    <div className="ua-building-name">
+                                        <FaBuilding aria-hidden="true" />
+                                        <span>{apartment.TenToaNha || 'Tòa nhà chưa cập nhật'}</span>
+                                    </div>
+
+                                    <div className="ua-card-title-row">
+                                        <h3>{apartment.TenCanHo}</h3>
+                                        <span>Mã #{apartment.MaCanHo}</span>
+                                    </div>
+
+                                    <div className="ua-price">
+                                        <strong>{formatCurrency(apartment.GiaThue)}</strong>
+                                        <span>/ tháng</span>
+                                    </div>
+
+                                    <div className="ua-amenities">
+                                        <div>
+                                            <FaRulerCombined aria-hidden="true" />
+                                            <span><strong>{apartment.DienTich || 0}</strong> m²</span>
+                                        </div>
+                                        <div>
+                                            <FaBed aria-hidden="true" />
+                                            <span><strong>{apartment.SoPhongNgu || 0}</strong> phòng ngủ</span>
+                                        </div>
+                                        <div>
+                                            <FaBath aria-hidden="true" />
+                                            <span><strong>{apartment.SoPhongTam || 0}</strong> phòng tắm</span>
+                                        </div>
+                                        <div>
+                                            <FaLayerGroup aria-hidden="true" />
+                                            <span>Tầng <strong>{apartment.Tang || '—'}</strong></span>
+                                        </div>
+                                    </div>
+
+                                    <p className="ua-description">
+                                        {apartment.MoTa || 'Thông tin mô tả căn hộ đang được cập nhật.'}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        className="ua-detail-button"
+                                        onClick={() => setSelectedApartment(apartment)}
+                                    >
+                                        Xem chi tiết
+                                        <FaArrowRight aria-hidden="true" />
+                                    </button>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {selectedApartment && (
+                <div
+                    className="ua-modal-backdrop"
+                    role="presentation"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) setSelectedApartment(null);
+                    }}
+                >
+                    <section
+                        className="ua-detail-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="ua-detail-title"
+                    >
+                        <button
+                            type="button"
+                            className="ua-modal-close"
+                            aria-label="Đóng chi tiết căn hộ"
+                            onClick={() => setSelectedApartment(null)}
+                        >
+                            <FaTimes aria-hidden="true" />
+                        </button>
+
+                        <div className="ua-modal-media">
+                            <div className="ua-image-placeholder">
+                                <FaHome aria-hidden="true" />
+                                <span>Hình ảnh đang cập nhật</span>
                             </div>
-                            <div className="modal-body">
+                            {selectedApartment.HinhAnh && (
                                 <img
                                     src={getImageUrl(selectedApartment.HinhAnh)}
-                                    className="img-fluid mb-3 w-100"
                                     alt={selectedApartment.TenCanHo}
-                                    style={{ maxHeight: '400px', objectFit: 'cover' }}
+                                    onError={(event) => {
+                                        event.currentTarget.style.display = 'none';
+                                    }}
                                 />
-                                <h4>{selectedApartment.TenCanHo}</h4>
-                                <div className="detail-info">
-                                    <p><strong>Diện tích:</strong> {selectedApartment.DienTich} m²</p>
-                                    <p><strong>Giá thuê:</strong> {formatCurrency(selectedApartment.GiaThue)}</p>
-                                    <p><strong>Tầng:</strong> {selectedApartment.Tang}</p>
-                                    <p><strong>Phòng ngủ:</strong> {selectedApartment.SoPhongNgu}</p>
-                                    <p><strong>Phòng tắm:</strong> {selectedApartment.SoPhongTam}</p>
-                                    <p><strong>Trạng thái:</strong> <span className={getStatusBadge(selectedApartment.TrangThai)}>{selectedApartment.TrangThai}</span></p>
-                                    {selectedApartment.MoTa && (
-                                        <p><strong>Mô tả:</strong><br />{selectedApartment.MoTa}</p>
-                                    )}
+                            )}
+                            <span className={`ua-status ${getStatusClass(selectedApartment.TrangThai)}`}>
+                                <i aria-hidden="true" />
+                                {selectedApartment.TrangThai || 'Chưa cập nhật'}
+                            </span>
+                        </div>
+
+                        <div className="ua-modal-content">
+                            <div className="ua-building-name">
+                                <FaBuilding aria-hidden="true" />
+                                <span>{selectedApartment.TenToaNha || 'Tòa nhà chưa cập nhật'}</span>
+                            </div>
+                            <h2 id="ua-detail-title">{selectedApartment.TenCanHo}</h2>
+                            <div className="ua-modal-price">
+                                <strong>{formatCurrency(selectedApartment.GiaThue)}</strong>
+                                <span>/ tháng</span>
+                            </div>
+
+                            <div className="ua-modal-specs">
+                                <div>
+                                    <FaRulerCombined aria-hidden="true" />
+                                    <span>Diện tích</span>
+                                    <strong>{selectedApartment.DienTich || 0} m²</strong>
+                                </div>
+                                <div>
+                                    <FaLayerGroup aria-hidden="true" />
+                                    <span>Tầng</span>
+                                    <strong>{selectedApartment.Tang || '—'}</strong>
+                                </div>
+                                <div>
+                                    <FaBed aria-hidden="true" />
+                                    <span>Phòng ngủ</span>
+                                    <strong>{selectedApartment.SoPhongNgu || 0}</strong>
+                                </div>
+                                <div>
+                                    <FaBath aria-hidden="true" />
+                                    <span>Phòng tắm</span>
+                                    <strong>{selectedApartment.SoPhongTam || 0}</strong>
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowDetail(false)}
-                                >
-                                    Đóng
-                                </button>
+
+                            <div className="ua-modal-description">
+                                <h3>Mô tả căn hộ</h3>
+                                <p>
+                                    {selectedApartment.MoTa
+                                        || 'Thông tin mô tả căn hộ đang được cập nhật.'}
+                                </p>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
             )}
         </div>

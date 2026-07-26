@@ -18,7 +18,7 @@ const Login = () => {
             navigate(
                 data.user?.role === 'ChuThue'
                     ? '/dashboard'
-                    : '/profile',
+                    : '/apartments',
                 { replace: true },
             );
         } catch (err) {

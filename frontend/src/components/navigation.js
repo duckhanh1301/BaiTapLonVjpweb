@@ -39,7 +39,7 @@
 //         icon: UserCircle,
 //     },
 // ];
-import { FaHome, FaBuilding, FaUser, FaFileContract, FaUserCog, FaWrench, FaHistory, FaBell } from 'react-icons/fa';
+import { FaHome, FaBuilding, FaUser, FaFileContract, FaUserCog } from 'react-icons/fa';
 
 export const navigationItems = [
     // Admin Routes
@@ -76,44 +76,20 @@ export const navigationItems = [
     // User Routes
     {
         path: '/apartments',
-        label: 'Danh Sách Căn Hộ',
+        label: 'Căn Hộ',
         icon: FaBuilding,
         roles: ['NguoiThue'],
     },
     {
         path: '/contracts',
-        label: 'Hợp Đồng Của Tôi',
+        label: 'Hợp Đồng',
         icon: FaFileContract,
-        roles: ['NguoiThue'],
-    },
-    {
-        path: '/payment-history',
-        label: 'Lịch Sử Thanh Toán',
-        icon: FaHistory,
-        roles: ['NguoiThue'],
-    },
-    {
-        path: '/repair-request',
-        label: 'Yêu Cầu Sửa Chữa',
-        icon: FaWrench,
-        roles: ['NguoiThue'],
-    },
-    {
-        path: '/notifications',
-        label: 'Thông Báo',
-        icon: FaBell,
-        roles: ['NguoiThue'],
-    },
-    {
-        path: '/profile',
-        label: 'Thông Tin Cá Nhân',
-        icon: FaUserCog,
         roles: ['NguoiThue'],
     },
     {
         path: '/change-password',
         label: 'Đổi Mật Khẩu',
         icon: FaUserCog,
-        roles: ['NguoiThue', 'ChuThue'],
+        roles: ['ChuThue', 'NguoiThue'],
     },
 ];
