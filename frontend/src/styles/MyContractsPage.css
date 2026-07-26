@@ -1,0 +1,49 @@
+.my-contracts-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.contract-card {
+    border: 1px solid #dee2e6;
+    transition: box-shadow 0.3s ease;
+}
+
+.contract-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contract-card .card-header {
+    border-bottom: 2px solid #007bff;
+    padding: 1rem;
+}
+
+.contract-card .card-body {
+    padding: 1.5rem;
+}
+
+.contract-card .card-body p {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.contract-card strong {
+    color: #333;
+}
+
+.contracts-list {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .contract-card .card-header {
+        padding: 0.75rem;
+    }
+
+    .contract-card .card-body {
+        padding: 1rem;
+    }
+
+    .contract-card .card-body p {
+        font-size: 0.9rem;
+    }
+}

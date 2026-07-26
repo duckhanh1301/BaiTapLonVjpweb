@@ -8,6 +8,13 @@ import BuildingPage from "./page/BuildingPage";
 import ApartmentPage from "./page/ApartmentPage";
 import TenantPage from "./page/TenantPage";
 import ContractPage from "./page/ContractPage";
+import UserApartmentPage from "./page/UserApartmentPage";
+import MyContractsPage from "./page/MyContractsPage";
+import UserProfilePage from "./page/UserProfilePage";
+import ChangePasswordPage from "./page/ChangePasswordPage";
+import RepairRequestPage from "./page/RepairRequestPage";
+import PaymentHistoryPage from "./page/PaymentHistoryPage";
+import NotificationsPage from "./page/NotificationsPage";
 import Layout from './components/Layout';
 import { getCurrentUser } from './services/authService';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -18,12 +25,20 @@ const OwnerRoute = ({ children }) => (
     </PrivateRoute>
 );
 
+const UserRoute = ({ children }) => (
+    <PrivateRoute allowedRoles={['NguoiThue']}>
+        {children}
+    </PrivateRoute>
+);
+
 function App() {
     const token = localStorage.getItem('token');
     const user = getCurrentUser();
     const homePath = user?.role === 'ChuThue'
         ? '/dashboard'
-        : '/profile';
+        : user?.role === 'NguoiThue'
+            ? '/apartments'
+            : '/login';
 
     return (
         <BrowserRouter>
@@ -36,13 +51,14 @@ function App() {
                         </PrivateRoute>
                     }
                 >
+                    {/* Admin Routes */}
                     <Route
                         path="/dashboard"
                         element={<OwnerRoute><Dashboard /></OwnerRoute>}
                     />
                     <Route
                         path="/apartments"
-                        element={<OwnerRoute><ApartmentPage /></OwnerRoute>}
+                        element={user?.role === 'ChuThue' ? <OwnerRoute><ApartmentPage /></OwnerRoute> : <UserRoute><UserApartmentPage /></UserRoute>}
                     />
                     <Route
                         path="/buildings"
@@ -54,9 +70,34 @@ function App() {
                     />
                     <Route
                         path="/contracts"
-                        element={<OwnerRoute><ContractPage /></OwnerRoute>}
+                        element={user?.role === 'ChuThue' ? <OwnerRoute><ContractPage /></OwnerRoute> : <UserRoute><MyContractsPage /></UserRoute>}
                     />
-                    <Route path="/profile" element={<SectionPage name="Cá Nhân" />} />
+                    
+                    {/* User Routes */}
+                    <Route
+                        path="/my-contracts"
+                        element={<UserRoute><MyContractsPage /></UserRoute>}
+                    />
+                    <Route
+                        path="/profile"
+                        element={user?.role === 'NguoiThue' ? <UserRoute><UserProfilePage /></UserRoute> : <SectionPage name="Cá Nhân" />}
+                    />
+                    <Route
+                        path="/change-password"
+                        element={<PrivateRoute><ChangePasswordPage /></PrivateRoute>}
+                    />
+                    <Route
+                        path="/repair-request"
+                        element={<UserRoute><RepairRequestPage /></UserRoute>}
+                    />
+                    <Route
+                        path="/payment-history"
+                        element={<UserRoute><PaymentHistoryPage /></UserRoute>}
+                    />
+                    <Route
+                        path="/notifications"
+                        element={<PrivateRoute><NotificationsPage /></PrivateRoute>}
+                    />
                 </Route>
                 <Route 
                     path="/" 

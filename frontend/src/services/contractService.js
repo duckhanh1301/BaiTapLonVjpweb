@@ -23,6 +23,11 @@ export const getAllContracts = async () => {
     return response.data;
 };
 
+export const getMyContracts = async () => {
+    const response = await axios.get("/contracts/my-contracts");
+    return response.data;
+};
+
 export const getContractOptions = async () => {
     const response = await axios.get("/contracts/options");
     return response.data;

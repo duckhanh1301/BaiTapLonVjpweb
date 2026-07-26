@@ -1,0 +1,71 @@
+.user-apartment-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.search-filter-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.apartment-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.apartment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.apartment-image-container {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.apartment-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.apartment-info p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+    margin-top: 50px;
+}
+
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.detail-info {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.detail-info p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .apartment-card {
+        margin-bottom: 1rem;
+    }
+
+    .search-filter-section {
+        margin-bottom: 1rem;
+    }
+}
