@@ -3,7 +3,8 @@ const db = require("../config/db");
 // Lấy tất cả căn hộ
 const getAllApartments = async () => {
     const [rows] = await db.query(
-        `SELECT c.*, t.TenToaNha
+        `SELECT c.*, t.TenToaNha,
+         (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t ON c.MaToaNha = t.MaToaNha
          ORDER BY c.MaCanHo DESC`
@@ -14,7 +15,8 @@ const getAllApartments = async () => {
 // Lấy căn hộ theo ID
 const getApartmentById = async (id) => {
     const [rows] = await db.query(
-        `SELECT c.*, t.TenToaNha
+        `SELECT c.*, t.TenToaNha,
+         (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t
          ON c.MaToaNha = t.MaToaNha
@@ -118,7 +120,8 @@ const deleteApartment = async (id) => {
 const searchApartments = async (keyword) => {
 
     const [rows] = await db.query(
-        `SELECT c.*, t.TenToaNha
+        `SELECT c.*, t.TenToaNha,
+         (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t
          ON c.MaToaNha = t.MaToaNha

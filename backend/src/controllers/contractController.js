@@ -353,11 +353,25 @@ const deleteContract = async (req, res) => {
     }
 };
 
+const getUserContracts = async (req, res) => {
+    try {
+        const accountId = req.user.id;
+        const contracts = await contractModel.getUserContracts(accountId);
+        res.status(200).json(contracts);
+    } catch (error) {
+        res.status(500).json({
+            message: "Lỗi lấy hợp đồng của bạn",
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     getAllContracts,
     getExpiringContracts,
     getContractOptions,
     createContract,
     updateContract,
-    deleteContract
+    deleteContract,
+    getUserContracts
 };

@@ -6,19 +6,19 @@ const apartmentController = require("../controllers/apartmentController");
 const authMiddleware = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
-router.use(authMiddleware, authorizeRoles("ChuThue"));
-
-router.get("/", apartmentController.getAllApartments);
+// GET endpoints - allow both ChuThue (Admin) and NguoiThue (users)
+router.get("/", authMiddleware, authorizeRoles("ChuThue", "NguoiThue"), apartmentController.getAllApartments);
 
 // Search phải đặt trước :id
-router.get("/search", apartmentController.searchApartments);
+router.get("/search", authMiddleware, authorizeRoles("ChuThue", "NguoiThue"), apartmentController.searchApartments);
 
-router.get("/:id", apartmentController.getApartmentById);
+router.get("/:id", authMiddleware, authorizeRoles("ChuThue", "NguoiThue"), apartmentController.getApartmentById);
 
-router.post("/", apartmentController.createApartment);
+// POST/PUT/DELETE - only ChuThue (Admin)
+router.post("/", authMiddleware, authorizeRoles("ChuThue"), apartmentController.createApartment);
 
-router.put("/:id", apartmentController.updateApartment);
+router.put("/:id", authMiddleware, authorizeRoles("ChuThue"), apartmentController.updateApartment);
 
-router.delete("/:id", apartmentController.deleteApartment);
+router.delete("/:id", authMiddleware, authorizeRoles("ChuThue"), apartmentController.deleteApartment);
 
 module.exports = router;

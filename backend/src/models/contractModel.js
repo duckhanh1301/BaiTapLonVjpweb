@@ -353,6 +353,39 @@ const getContractById = async (id) => {
     return rows[0] || null;
 };
 
+// Lấy hợp đồng của người dùng hiện tại
+const getUserContracts = async (accountId) => {
+    const [rows] = await db.query(`
+        SELECT
+            hd.*,
+            DATE_FORMAT(hd.NgayBatDau, '%Y-%m-%d') AS NgayBatDau,
+            DATE_FORMAT(hd.NgayKetThuc, '%Y-%m-%d') AS NgayKetThuc,
+            nt.HoTen,
+            nt.CCCD,
+            nt.SoDienThoai,
+            nt.Email,
+            ch.TenCanHo,
+            ch.Tang,
+            ch.GiaThue,
+            ch.DienTich,
+            ch.SoPhongNgu,
+            ch.SoPhongTam,
+            tn.TenToaNha,
+            tn.DiaChi AS DiaChiToaNha
+        FROM HopDong hd
+        JOIN NguoiThue nt
+            ON hd.MaNguoiThue = nt.MaNguoiThue
+        JOIN CanHo ch
+            ON hd.MaCanHo = ch.MaCanHo
+        JOIN ToaNha tn
+            ON ch.MaToaNha = tn.MaToaNha
+        WHERE nt.MaTaiKhoan = ?
+        ORDER BY hd.MaHopDong DESC
+    `, [accountId]);
+
+    return rows;
+};
+
 module.exports = {
     getAllContracts,
     getExpiringContracts,
@@ -365,5 +398,6 @@ module.exports = {
     createContractWithTenant,
     updateContract,
     deleteContract,
-    getContractById
+    getContractById,
+    getUserContracts
 };
