@@ -11,7 +11,10 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     }
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
-        return <Navigate to="/profile" replace />;
+        const fallbackPath = user.role === "ChuThue"
+            ? "/dashboard"
+            : "/apartments";
+        return <Navigate to={fallbackPath} replace />;
     }
 
     return children;

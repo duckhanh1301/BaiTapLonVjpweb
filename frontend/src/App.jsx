@@ -28,6 +28,34 @@ const UserRoute = ({ children }) => (
   <PrivateRoute allowedRoles={["NguoiThue"]}>{children}</PrivateRoute>
 );
 
+const ApartmentRoute = () => {
+  const user = getCurrentUser();
+
+  if (user?.role === "ChuThue") {
+    return <OwnerRoute><ApartmentPage /></OwnerRoute>;
+  }
+
+  if (user?.role === "NguoiThue") {
+    return <UserRoute><UserApartmentPage /></UserRoute>;
+  }
+
+  return <Navigate to="/login" replace />;
+};
+
+const ContractRoute = () => {
+  const user = getCurrentUser();
+
+  if (user?.role === "ChuThue") {
+    return <OwnerRoute><ContractPage /></OwnerRoute>;
+  }
+
+  if (user?.role === "NguoiThue") {
+    return <UserRoute><MyContractsPage /></UserRoute>;
+  }
+
+  return <Navigate to="/login" replace />;
+};
+
 function App() {
   const token = localStorage.getItem("token");
   const user = getCurrentUser();
@@ -61,17 +89,7 @@ function App() {
           />
           <Route
             path="/apartments"
-            element={
-              user?.role === "ChuThue" ? (
-                <OwnerRoute>
-                  <ApartmentPage />
-                </OwnerRoute>
-              ) : (
-                <UserRoute>
-                  <UserApartmentPage />
-                </UserRoute>
-              )
-            }
+            element={<ApartmentRoute />}
           />
           <Route
             path="/buildings"
@@ -91,17 +109,7 @@ function App() {
           />
           <Route
             path="/contracts"
-            element={
-              user?.role === "ChuThue" ? (
-                <OwnerRoute>
-                  <ContractPage />
-                </OwnerRoute>
-              ) : (
-                <UserRoute>
-                  <MyContractsPage />
-                </UserRoute>
-              )
-            }
+            element={<ContractRoute />}
           />
 
           {/* User Routes */}
