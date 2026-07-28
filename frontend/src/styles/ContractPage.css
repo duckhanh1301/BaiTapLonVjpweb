@@ -657,11 +657,27 @@
 
 .contract-create-modal .modal-dialog {
     max-width: 920px;
+    height: calc(100vh - 36px);
+}
+
+.contract-create-modal .modal-content {
+    display: flex;
+    max-height: 100%;
+    flex-direction: column;
+}
+
+.contract-create-modal .modal-content > form {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
 }
 
 .contract-create-modal .management-modal-body {
     display: grid;
     gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .contract-modal-icon {
