@@ -1,9 +1,27 @@
 const db = require("../config/db");
 
+// Trạng thái hiển thị được ưu tiên theo hợp đồng đang hiệu lực ở thời điểm hiện tại.
+// Điều này tránh việc CanHo.TrangThai bị cũ sau khi tạo/sửa hợp đồng.
+const displayedStatusSql = (apartmentAlias = "c") => `
+    CASE
+        WHEN EXISTS (
+            SELECT 1
+            FROM HopDong hd
+            WHERE hd.MaCanHo = ${apartmentAlias}.MaCanHo
+              AND hd.TrangThai = 'HieuLuc'
+              AND hd.NgayBatDau <= CURDATE()
+              AND hd.NgayKetThuc >= CURDATE()
+        ) THEN 'Đã thuê'
+        WHEN ${apartmentAlias}.TrangThai = 'DaThue' THEN 'Đã thuê'
+        WHEN ${apartmentAlias}.TrangThai = 'Trong' THEN 'Trống'
+        ELSE ${apartmentAlias}.TrangThai
+    END`;
+
 // Lấy tất cả căn hộ
 const getAllApartments = async () => {
     const [rows] = await db.query(
         `SELECT c.*, t.TenToaNha,
+         ${displayedStatusSql()} AS TrangThai,
          (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t ON c.MaToaNha = t.MaToaNha
@@ -16,6 +34,7 @@ const getAllApartments = async () => {
 const getApartmentById = async (id) => {
     const [rows] = await db.query(
         `SELECT c.*, t.TenToaNha,
+         ${displayedStatusSql()} AS TrangThai,
          (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t
@@ -121,12 +140,13 @@ const searchApartments = async (keyword) => {
 
     const [rows] = await db.query(
         `SELECT c.*, t.TenToaNha,
+         ${displayedStatusSql()} AS TrangThai,
          (SELECT DuongDanAnh FROM AnhCanHo WHERE MaCanHo = c.MaCanHo ORDER BY NgayTaiLen DESC LIMIT 1) AS HinhAnh
          FROM CanHo c
          JOIN ToaNha t
          ON c.MaToaNha = t.MaToaNha
          WHERE c.TenCanHo LIKE ?
-            OR c.TrangThai LIKE ?
+            OR ${displayedStatusSql()} LIKE ?
             OR t.TenToaNha LIKE ?
          ORDER BY c.MaCanHo DESC`,
         [
