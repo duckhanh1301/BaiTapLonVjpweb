@@ -44,6 +44,15 @@ export const login = async (email, password) => {
     }
 };
 
+export const registerTenant = async (data) => {
+    try {
+        const response = await axiosInstance.post('/auth/register', data);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Lỗi kết nối đến server' };
+    }
+};
+
 export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

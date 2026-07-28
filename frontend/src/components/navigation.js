@@ -39,7 +39,7 @@
 //         icon: UserCircle,
 //     },
 // ];
-import { FaHome, FaBuilding, FaUser, FaFileContract, FaUserCog } from 'react-icons/fa';
+import { FaHome, FaBuilding, FaUser, FaFileContract, FaUserCog, FaTools, FaWallet } from 'react-icons/fa';
 
 export const navigationItems = [
     // Admin Routes
@@ -73,6 +73,12 @@ export const navigationItems = [
         icon: FaFileContract,
         roles: ['ChuThue'],
     },
+    {
+        path: '/operations',
+        label: 'Vận hành',
+        icon: FaTools,
+        roles: ['ChuThue'],
+    },
     // User Routes
     {
         path: '/apartments',
@@ -84,6 +90,24 @@ export const navigationItems = [
         path: '/contracts',
         label: 'Hợp Đồng',
         icon: FaFileContract,
+        roles: ['NguoiThue'],
+    },
+    {
+        path: '/profile',
+        label: 'Hồ sơ cá nhân',
+        icon: FaUser,
+        roles: ['NguoiThue'],
+    },
+    {
+        path: '/repair-request',
+        label: 'Yêu cầu sửa chữa',
+        icon: FaTools,
+        roles: ['NguoiThue'],
+    },
+    {
+        path: '/payment-history',
+        label: 'Thanh toán',
+        icon: FaWallet,
         roles: ['NguoiThue'],
     },
     {

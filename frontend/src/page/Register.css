@@ -1,0 +1,130 @@
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #eaf3ff, #f8fbff 48%, #dceeff);
+}
+
+.auth-card {
+    width: min(100%, 440px);
+    padding: 38px;
+    border: 1px solid #dbe7f5;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 20px 50px rgba(33, 76, 124, .14);
+}
+
+.auth-icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    color: #fff;
+    background: #1769d1;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.auth-eyebrow {
+    margin: 0 0 7px;
+    color: #1769d1;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+}
+
+.auth-card h1 {
+    margin: 0;
+    color: #15243a;
+    font-size: 1.7rem;
+}
+
+.auth-description {
+    margin: 10px 0 25px;
+    color: #627087;
+    line-height: 1.5;
+}
+
+.auth-card label {
+    display: block;
+    margin: 15px 0 7px;
+    color: #33445e;
+    font-size: .92rem;
+    font-weight: 600;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid #cbd8e7;
+    border-radius: 9px;
+    outline: none;
+    font-size: 1rem;
+}
+
+.auth-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.auth-card input:focus {
+    border-color: #1769d1;
+    box-shadow: 0 0 0 3px rgba(23, 105, 209, .12);
+}
+
+.auth-card button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px;
+    border: 0;
+    border-radius: 9px;
+    color: #fff;
+    background: #1769d1;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.auth-card button:hover:not(:disabled) {
+    background: #0f56ae;
+}
+
+.auth-card button:disabled {
+    cursor: wait;
+    opacity: .7;
+}
+
+.auth-error {
+    margin: 15px 0 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #a32020;
+    background: #fff0f0;
+    font-size: .9rem;
+}
+
+.auth-switch {
+    margin: 22px 0 0;
+    color: #627087;
+    text-align: center;
+}
+
+.auth-switch a {
+    color: #1769d1;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 22px;
+    }
+
+    .auth-two-columns {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

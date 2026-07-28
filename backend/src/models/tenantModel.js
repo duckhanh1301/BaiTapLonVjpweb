@@ -31,12 +31,14 @@ const getAllTenants = async (accountId = null) => {
         LEFT JOIN ToaNha tn
             ON ch.MaToaNha = tn.MaToaNha
     `;
-    const conditions = ["hd.MaHopDong IS NOT NULL"];
+    const conditions = [];
     const params = [];
 
     if (accountId !== null) {
         conditions.push("nt.MaTaiKhoan = ?");
         params.push(accountId);
+    } else {
+        conditions.push("hd.MaHopDong IS NOT NULL");
     }
 
     sql += ` WHERE ${conditions.join(" AND ")}`;

@@ -11,6 +11,8 @@ const contractRoutes = require("./routes/contractRoutes");
 const exportRoutes = require("./routes/exportRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const imageRoutes = require("./routes/imageRoutes");
+const repairRoutes = require("./routes/repairRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.use("/api/contracts", contractRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/images", imageRoutes);
+app.use("/api/repairs", repairRoutes);
+app.use("/api/payments", paymentRoutes);
 // Test API
 app.get("/", (req, res) => {
     res.send("Backend quản lý tòa nhà đang chạy");
