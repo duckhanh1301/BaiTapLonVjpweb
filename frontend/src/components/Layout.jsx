@@ -52,7 +52,36 @@
 // };
 
 // export default Layout;
-import React from 'react';
+
+
+// import React from 'react';
+// import { Outlet } from 'react-router-dom';
+// import Header from './Header';
+// import '../styles/Layout.css';
+
+// function Layout() {
+//     const user = JSON.parse(localStorage.getItem('user'));
+//     const handleLogout = () => {
+//         localStorage.removeItem('token');
+//         localStorage.removeItem('user');
+//         window.location.href = '/login';
+//     };
+
+//     return (
+//         <div className="layout-container">
+//             <Header user={user} handleLogout={handleLogout} />
+//             <main className="layout-main">
+//                 <div className="layout-content">
+//                     <Outlet />
+//                 </div>
+//             </main>
+//         </div>
+//     );
+// }
+
+// export default Layout;
+
+
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import '../styles/Layout.css';

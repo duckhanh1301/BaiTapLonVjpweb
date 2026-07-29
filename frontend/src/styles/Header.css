@@ -344,18 +344,42 @@
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
-        width: 200px;
-        padding: 12px;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        flex-direction: row;
+        align-items: center;
+        padding: 9px 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(18, 24, 38, 0.16);
+    }
+    .sidebar-brand,
+    .sidebar-account {
+        display: none;
+    }
+    .sidebar-nav {
+        display: flex;
+        min-width: 0;
+        gap: 5px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+        display: none;
     }
     .sidebar-link {
-        font-size: 13px;
-        padding: 10px 12px;
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 9px 11px;
+        border-radius: 9px;
+        font-size: 11px;
     }
     .sidebar-icon {
-        font-size: 16px;
-        margin-right: 8px;
-    }
-    .sidebar-brand h5 {
-        font-size: 16px;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        font-size: 14px;
     }
 }
